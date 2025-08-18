@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Kullanıcı Bilgileri</title>
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="css/oneriSikayet.css" />
+  <style>
+    body { margin:0; display:flex; font-family:Arial,sans-serif; height:100vh; }
+    .main { flex:1; padding:1rem; box-sizing:border-box; overflow-y:auto; }
+    .controls { display:flex; gap:1rem; align-items:center; flex-wrap:wrap; }
+    .controls label { font-size:0.9rem; }
+    .controls select, .controls input { padding:0.3rem; font-size:0.9rem; }
+    #reloadBtn { background:#28a745; color:#fff; border:none; padding:0.4rem 0.8rem; border-radius:4px; cursor:pointer; }
+    table { width:100%; border-collapse:collapse; margin-top:1rem; box-shadow:0 2px 6px rgba(0,0,0,0.1); }
+    th, td { border:1px solid #ddd; padding:0.6rem; text-align:left; font-size:0.9rem; vertical-align:top; }
+    thead th { background:#555; color:#fff; text-transform:uppercase; }
+    tbody tr:nth-child(odd){ background:#f9f9f9; }
+    tbody tr:hover { background:#eef; }
+    .btn { padding:0.3rem 0.6rem; border:none; border-radius:4px; font-size:0.85rem; cursor:pointer; margin-right:0.3rem; }
+    .btn.update  { background:#007bff; color:#fff; }
+    .btn.delete  { background:#dc3545; color:#fff; }
+    .btn.payment { background:#ffc107; color:#000; }
+    .btn.history { background:#6c757d; color:#fff; }
+    .status-select { padding:0.2rem; font-size:0.85rem; }
+    .last-payment, .next-due, .delay { white-space:nowrap; }
+    .delay.overdue { color:#dc3545; font-weight:bold; }
+    .history-row td { background:#f8f9fa; }
+    .pwd { display:flex; align-items:center; gap:.5rem; }
+    .pwd-code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background:#f6f7f9; padding:.15rem .4rem; border-radius:4px; }
+    .pwd-eye { background:none; border:none; cursor:pointer; color:#444; }
+    .pwd-eye:hover { color:#000; }
+
+    /* —— Basit Modal —— */
+    .modal-backdrop{
+      position:fixed; inset:0; background:rgba(0,0,0,.4);
+      display:none; align-items:center; justify-content:center; z-index:9999;
+    }
+    .modal-backdrop.show{ display:flex; }
+    .modal{
+      width: min(520px, 92vw);
+      background:#fff; border-radius:10px; box-shadow:0 20px 60px rgba(0,0,0,.25);
+      overflow:hidden; animation: pop .2s ease-out;
+    }
+    @keyframes pop { from{ transform:scale(.98); opacity:.7 } to{ transform:scale(1); opacity:1 } }
+    .modal header{
+      padding:.9rem 1rem; background:#f7f7f9; border-bottom:1px solid #eee;
+      display:flex; align-items:center; justify-content:space-between;
+    }
+    .modal header h3{ margin:0; font-size:1.05rem; }
+    .modal .content{ padding:1rem; }
+    .modal .actions{
+      padding:.8rem 1rem; background:#fafafa; border-top:1px solid #eee; display:flex; gap:.5rem; justify-content:flex-end;
+    }
+    .modal .actions .btn{ margin:0 }
+    .form-row{ display:flex; gap:.6rem; margin-bottom:.6rem; flex-wrap:wrap; }
+    .form-row .field{ flex:1 1 160px; }
+    .field label{ font-size:.85rem; display:block; margin-bottom:.25rem; color:#555; }
+    .field input, .field select, .field textarea{
+      width:100%; padding:.55rem .6rem; border:1px solid #dcdcdc; border-radius:6px; font-size:.95rem;
+    }
+    .pill{ display:inline-block; background:#eef5ff; color:#2b5fd2; padding:.2rem .5rem; border-radius:999px; font-size:.85rem; }
+    .x-btn{ background:none; border:none; font-size:1.1rem; cursor:pointer; color:#666; }
+    .x-btn:hover{ color:#000; }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar">
+    <h2>YAĞMURLU KÖY DERNEĞİ</h2>
+    <a href="index.html"><i class="fas fa-home"></i> Ana Sayfa</a>
+    <a href="kullaniciKayit.html"><i class="fas fa-user-plus"></i> Kullanıcı Kayıt</a>
+    <a href="kullaniciBilgileri.html" class="active"><i class="fas fa-users"></i> Kullanıcı Bilgileri</a>
+    <a href="gelirGider.html"><i class="fas fa-money-bill-wave"></i> Gelir - Gider</a>
+    <a href="post.html"><i class="fas fa-newspaper"></i> Post Paylaşımı</a>
+    <a href="reklam.html"><i class="fas fa-ad"></i> Reklam</a>
+    <a href="poll_admin.html"><i class="fas fa-chart-pie"></i> Anketler</a>
+    <a href="galeri.html"><i class="fas fa-images"></i> Galeri</a>
+    <a href="oneriSikayet.html"><i class="fas fa-comment-alt"></i> Öneri & Şikayet</a>
+    <a href="isletme.html"><i class="fas fa-store"></i> İşletmeler</a>
+<a href="bildirim.html"><i class="fas fa-bell"></i> Bildirim Gönder</a>
+<a href="etkinlik.html"><i class="fas fa-calendar-check"></i> Etkinlikler</a>
+
+    <a href="about.html"><i class="fas fa-info-circle"></i> Hakkımızda</a>
+  </div>
+
+  <div class="main">
+    <div class="controls">
+      <label>
+        Durum:
+        <select id="statusFilter">
+          <option value="">Tümü</option>
+          <option value="gold">Gold</option>
+          <option value="standart">Standart</option>
+        </select>
+      </label>
+      <label>
+        Ad Ara:
+        <input type="text" id="nameSearch" placeholder="Ad veya Soyad"/>
+      </label>
+      <button id="reloadBtn">Yenile</button>
+    </div>
+
+    <table id="userTable">
+      <thead>
+        <tr>
+          <th>Ad Soyad</th>
+          <th>Durum</th>
+          <th>Adres</th>
+          <th>Telefon</th>
+          <th>TC</th>
+          <th>Email</th>
+          <th>Şifre</th>
+          <th>Son Ödeme</th>
+          <th>Sonraki Ödeme</th>
+          <th>Gecikme</th>
+          <th>Geçmiş</th>
+          <th>İşlemler</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- ÖDEME MODAL -->
+  <div class="modal-backdrop" id="paymentBackdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="paymentTitle">
+      <header>
+        <h3 id="paymentTitle">Ödeme Ekle</h3>
+        <button class="x-btn" data-close="#paymentBackdrop" aria-label="Kapat">&times;</button>
+      </header>
+      <div class="content">
+        <form id="paymentForm">
+          <input type="hidden" id="pay_user_id"/>
+
+          <div class="form-row">
+            <div class="field">
+              <label for="pay_date">Ödeme Tarihi</label>
+              <input type="date" id="pay_date" required/>
+            </div>
+            <div class="field">
+              <label for="pay_amount">Tutar (₺)</label>
+              <input type="number" id="pay_amount" min="0" step="0.01" placeholder="0.00" required/>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="field">
+              <label for="pay_period_value">Periyot Değeri</label>
+              <input type="number" id="pay_period_value" min="1" step="1" value="1" required/>
+            </div>
+            <div class="field">
+              <label for="pay_period_unit">Periyot Birimi</label>
+              <select id="pay_period_unit" required>
+                <option value="day">Gün</option>
+                <option value="week">Hafta</option>
+                <option value="month" selected>Ay</option>
+                <option value="year">Yıl</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="field">
+              <label>Sonraki Ödeme (öngörü)</label>
+              <div id="nextDuePreview" class="pill">—</div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="actions">
+        <button class="btn" data-close="#paymentBackdrop">İptal</button>
+        <button class="btn update" id="paymentSaveBtn">Kaydet</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ONAY MODAL -->
+  <div class="modal-backdrop" id="confirmBackdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+      <header>
+        <h3 id="confirmTitle">Onay</h3>
+        <button class="x-btn" data-close="#confirmBackdrop" aria-label="Kapat">&times;</button>
+      </header>
+      <div class="content">
+        <p id="confirmMessage">Emin misiniz?</p>
+      </div>
+      <div class="actions">
+        <button class="btn" data-close="#confirmBackdrop">Vazgeç</button>
+        <button class="btn delete" id="confirmYesBtn">Evet, Sil</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BİLGİ MODAL -->
+  <div class="modal-backdrop" id="infoBackdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="infoTitle">
+      <header>
+        <h3 id="infoTitle">Bilgi</h3>
+        <button class="x-btn" data-close="#infoBackdrop" aria-label="Kapat">&times;</button>
+      </header>
+      <div class="content">
+        <p id="infoMessage">Mesaj</p>
+      </div>
+      <div class="actions">
+        <button class="btn update" data-close="#infoBackdrop">Tamam</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API = 'https://erkayasoft.com/api';
+    let users = [];
+    const normPackage = v => (v ?? '').toString().trim().toLowerCase();
+
+    // —— Modal helpers —— 
+    function showModal(sel){ document.querySelector(sel).classList.add('show'); }
+    function hideModal(sel){ document.querySelector(sel).classList.remove('show'); }
+    document.addEventListener('click', (e)=>{
+      const closeSel = e.target.getAttribute('data-close');
+      if (closeSel) hideModal(closeSel);
+      const bd = e.target.classList.contains('modal-backdrop') ? e.target : null;
+      if (bd && bd.id) hideModal('#'+bd.id);
+    });
+    function showInfo(msg){ document.getElementById('infoMessage').textContent = msg; showModal('#infoBackdrop'); }
+    function showConfirm(msg, onYes){
+      document.getElementById('confirmMessage').textContent = msg;
+      showModal('#confirmBackdrop');
+      const yesBtn = document.getElementById('confirmYesBtn');
+      const newBtn = yesBtn.cloneNode(true);
+      yesBtn.parentNode.replaceChild(newBtn, yesBtn);
+      newBtn.addEventListener('click', ()=>{ hideModal('#confirmBackdrop'); onYes && onYes(); });
+    }
+
+    // —— Tarih yardımcıları (Safari/iOS güvenli) —— 
+    function parseYMD(s){
+      const [y,m,d] = s.split('-').map(Number);
+      return new Date(y, (m||1)-1, d||1); // yerel
+    }
+    function fmt(d){ // YYYY-MM-DD
+      const y = d.getFullYear();
+      const m = String(d.getMonth()+1).padStart(2,'0');
+      const dd= String(d.getDate()).padStart(2,'0');
+      return `${y}-${m}-${dd}`;
+    }
+    function addPeriodLocal(baseDateStr, value, unit){
+      const d = parseYMD(baseDateStr);
+      const v = Number(value||0);
+      if (!v) return baseDateStr;
+      if (unit==='day') d.setDate(d.getDate()+v);
+      else if (unit==='week') d.setDate(d.getDate()+v*7);
+      else if (unit==='year') d.setFullYear(d.getFullYear()+v);
+      else /*month*/ d.setMonth(d.getMonth()+v);
+      return fmt(d);
+    }
+    const unitTR = u => u==='day'?'gün': u==='week'?'hafta': u==='year'?'yıl':'ay';
+
+    // —— Yükleme & render —— 
+    document.addEventListener('DOMContentLoaded', ()=>{
+      loadUsers();
+      document.getElementById('statusFilter').onchange = renderUsers;
+      document.getElementById('nameSearch').oninput   = renderUsers;
+      document.getElementById('reloadBtn').onclick    = loadUsers;
+
+      // Ödeme modal canlı önizleme
+      const inpDate = document.getElementById('pay_date');
+      const inpVal  = document.getElementById('pay_period_value');
+      const inpUnit = document.getElementById('pay_period_unit');
+      [inpDate, inpVal, inpUnit].forEach(el=>{
+        el.addEventListener('input', ()=>{
+          const d=inpDate.value, v=parseInt(inpVal.value||'0',10), u=inpUnit.value;
+          document.getElementById('nextDuePreview').textContent =
+            (d && v>0 && u) ? addPeriodLocal(d, v, u) : '—';
+        });
+      });
+
+      document.getElementById('paymentSaveBtn').addEventListener('click', savePayment);
+      document.querySelector('#userTable tbody').addEventListener('click', onTableClick);
+    });
+
+    async function loadUsers(){
+      try {
+        const res = await fetch(`${API}/get_users.php`);
+        const j = await res.json();
+        if (!j.success) throw (j.error || 'Hata');
+        users = j.data;
+        renderUsers();
+      } catch(err) {
+        showInfo('Kullanıcılar yüklenemedi: '+err);
+      }
+    }
+
+    function renderUsers(){
+      const tbody = document.querySelector('#userTable tbody');
+      const sf = document.getElementById('statusFilter').value; // '' | 'gold' | 'standart'
+      const nf = document.getElementById('nameSearch').value.trim().toLowerCase();
+      tbody.innerHTML = '';
+
+      users
+        .filter(u => {
+          const full = (`${u.firstName||''} ${u.lastName||''}`).toLowerCase();
+          const pkg = normPackage(u.paket);
+          return (!sf || pkg === sf) && (!nf || full.includes(nf));
+        })
+        .forEach(u => {
+          const pkg = normPackage(u.paket);
+          const tr = document.createElement('tr');
+          tr.dataset.id = u._id;
+
+          const rawPwd = (u.password ?? '').toString();
+          const masked = rawPwd ? '•'.repeat(Math.min(rawPwd.length, 12)) : '—';
+
+          tr.innerHTML = `
+            <td>${(u.firstName||'')} ${(u.lastName||'')}</td>
+            <td>
+              <select class="status-select">
+                <option value="gold" ${pkg==='gold'?'selected':''}>Gold</option>
+                <option value="Standart" ${pkg==='standart'?'selected':''}>Standart</option>
+              </select>
+              <button class="btn update">Güncelle</button>
+            </td>
+            <td>${u.address||'–'}</td>
+            <td>${u.phone  ||'–'}</td>
+            <td>${u.tc     ||'–'}</td>
+            <td>${u.email  ||'–'}</td>
+            <td>
+              <div class="pwd" data-raw="${encodeURIComponent(rawPwd)}" data-showing="0">
+                <span class="pwd-code">${masked}</span>
+                <button class="pwd-eye" title="Göster/Gizle"><i class="fa-regular fa-eye"></i></button>
+              </div>
+            </td>
+            <td class="last-payment">…</td>
+            <td class="next-due">…</td>
+            <td class="delay">…</td>
+            <td><button class="btn history">Geçmiş</button></td>
+            <td>
+              <button class="btn payment">Ödeme Ekle</button>
+              <button class="btn delete">Sil</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+          updatePaymentCells(tr, u._id);
+        });
+    }
+
+    // ———— Tablo içi işlemler ———— 
+    function onTableClick(e){
+      const tr = e.target.closest('tr'); if(!tr) return;
+      const uid = parseInt(tr.dataset.id,10);
+
+      // Şifre göster/gizle
+      if (e.target.closest('.pwd-eye')) {
+        const wrap = tr.querySelector('.pwd');
+        const code = wrap.querySelector('.pwd-code');
+        const showing = wrap.getAttribute('data-showing') === '1';
+        const raw = decodeURIComponent(wrap.getAttribute('data-raw') || '');
+        if (!raw) return;
+        if (showing) {
+          code.textContent = '•'.repeat(Math.min(raw.length, 12));
+          wrap.setAttribute('data-showing','0');
+        } else {
+          code.textContent = raw;
+          wrap.setAttribute('data-showing','1');
+        }
+        return;
+      }
+
+      // Paket güncelle
+      if (e.target.classList.contains('update')) {
+        const sel = tr.querySelector('.status-select');
+        const pkgToSend = sel.value; // 'gold' veya 'Standart'
+        fetch(`${API}/update_user_package.php`, {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ id: uid, package: pkgToSend })
+        }).then(r=>r.json()).then(j=>{
+          if(!j.success) throw (j.error||'Güncellenemedi');
+          showInfo('Paket güncellendi.');
+        }).catch(err=> showInfo('Hata: '+err));
+      }
+
+      // Sil
+      if (e.target.classList.contains('delete')) {
+        showConfirm('Kullanıcıyı silmek istediğinize emin misiniz?', ()=>{
+          fetch(`${API}/delete_user.php`, {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ id: uid })
+          }).then(r=>r.json()).then(j=>{
+            if(!j.success) throw (j.error||'Silinemedi');
+            showInfo('Silindi.');
+            loadUsers();
+          }).catch(err=> showInfo('Hata: '+err));
+        });
+      }
+
+      // Ödeme modal aç
+      if (e.target.classList.contains('payment')) {
+        openPaymentModal(uid);
+      }
+
+      // Geçmiş aç/kapat
+      if (e.target.classList.contains('history')) {
+        const next = tr.nextElementSibling;
+        if (next && next.classList.contains('history-row')) {
+          next.remove();
+        } else {
+          fetch(`${API}/get_payment_history.php?user_id=${uid}&limit=50`)
+            .then(r=>r.json()).then(j=>{
+              if(!j.success) return showInfo('Geçmiş getirilemedi');
+              const list = (j.data||[]).slice(); // kopya
+              list.sort((a,b)=> (a.payment_date<b.payment_date?1:-1)); // yeni -> eski
+              const hr = document.createElement('tr');
+              hr.className = 'history-row';
+              hr.innerHTML = `<td colspan="12">
+                <strong>Ödeme Geçmişi:</strong><br>
+                ${
+                  list.length ? list.map(p=>{
+                    const tutar = parseFloat(p.amount ?? 0).toLocaleString('tr-TR');
+                    const pv = p.period_value ? ` — ${p.period_value} ${unitTR(p.period_unit||'month')}` : '';
+                    const nd = p.next_due_date ? ` — Sonraki: ${p.next_due_date}` : '';
+                    return `${p.payment_date} — ${tutar} ₺${pv}${nd}`;
+                  }).join('<br>') : 'Yok'
+                }
+              </td>`;
+              tr.after(hr);
+            });
+        }
+      }
+    }
+
+    // ———— Ödeme modal mantığı ———— 
+    function openPaymentModal(userId){
+      document.getElementById('pay_user_id').value = userId;
+      const today = fmt(new Date());
+      document.getElementById('pay_date').value = today;
+      document.getElementById('pay_amount').value = '';
+      document.getElementById('pay_period_value').value = 1;
+      document.getElementById('pay_period_unit').value = 'month';
+      document.getElementById('nextDuePreview').textContent = addPeriodLocal(today, 1, 'month');
+      showModal('#paymentBackdrop');
+    }
+
+    function savePayment(){
+      const uid = parseInt(document.getElementById('pay_user_id').value,10);
+      const date = document.getElementById('pay_date').value;
+      const amt = parseFloat(document.getElementById('pay_amount').value||'0');
+      const pv  = parseInt(document.getElementById('pay_period_value').value||'0',10);
+      const pu  = document.getElementById('pay_period_unit').value;
+
+      if(!date || isNaN(amt) || amt<0 || !pv || pv<1){
+        showInfo('Lütfen tarih, tutar ve geçerli bir periyot girin.'); return;
+      }
+
+      fetch(`${API}/add_payment.php`, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          user_id: uid,
+          payment_date: date,
+          amount: amt,
+          period_value: pv,
+          period_unit: pu
+        })
+      }).then(r=>r.json()).then(j=>{
+        if(!j.success) throw (j.error||'Kayıt başarısız');
+        hideModal('#paymentBackdrop');
+        showInfo('Ödeme kaydedildi.');
+        const tr = document.querySelector(`#userTable tbody tr[data-id="${uid}"]`);
+        if (tr) updatePaymentCells(tr, uid);
+      }).catch(err=> showInfo('Hata: '+err));
+    }
+
+    // ———— Son ödeme / Sonraki ödeme / Gecikme ———— 
+    async function updatePaymentCells(tr, userId){
+      const lastCell = tr.querySelector('.last-payment');
+      const nextCell = tr.querySelector('.next-due');
+      const delayCell= tr.querySelector('.delay');
+
+      try {
+        // ÖZEL: yeni endpoint ve summary kullanımı
+        const res = await fetch(`${API}/get_payment_history.php?user_id=${userId}&limit=1`);
+        const j   = await res.json();
+        if (!j.success) throw 0;
+        const list = j.data || [];
+
+        if(!list.length){
+          lastCell.textContent='Yok';
+          nextCell.textContent='—';
+          delayCell.textContent='—';
+          delayCell.classList.remove('overdue');
+          return;
+        }
+
+        // En güncel kayıt
+        const p = list[0];
+        const last = p.payment_date;
+        lastCell.textContent = last;
+
+        // Sunucu özetini tercih et (varsa)
+        let nextDue = (j.summary && j.summary.next_due_date) ? j.summary.next_due_date : (p.next_due_date || '');
+        if (!nextDue) {
+          const pv = parseInt(p.period_value||'0',10) || 1;
+          const pu = (p.period_unit||'month');
+          nextDue = addPeriodLocal(last, pv, pu);
+        }
+        nextCell.textContent = nextDue;
+
+        // Kalan gün / gecikme
+        const now = parseYMD(fmt(new Date()));
+        const due = parseYMD(nextDue);
+        const diffMs = due - now;
+        const diffDays = Math.round(diffMs / (1000*60*60*24));
+        if (diffDays < 0) {
+          delayCell.textContent = `${Math.abs(diffDays)} gün gecikme`;
+          delayCell.classList.add('overdue');
+        } else if (diffDays === 0) {
+          delayCell.textContent = 'Bugün';
+          delayCell.classList.remove('overdue');
+        } else {
+          delayCell.textContent = `${diffDays} gün kaldı`;
+          delayCell.classList.remove('overdue');
+        }
+      } catch {
+        lastCell.textContent='Hata';
+        nextCell.textContent='Hata';
+        delayCell.textContent='Hata';
+        delayCell.classList.remove('overdue');
+      }
+    }
+  </script>
+
+</body>
+</html>

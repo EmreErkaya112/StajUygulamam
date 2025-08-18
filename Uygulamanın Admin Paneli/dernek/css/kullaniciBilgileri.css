@@ -1,0 +1,622 @@
+:root {
+  --primary-color: #4361ee;
+  --secondary-color: #3f37c9;
+  --dark-color: #2b2d42;
+  --light-color: #f8f9fa;
+  --success-color: #4cc9f0;
+  --danger-color: #f72585;
+  --warning-color: #f8961e;
+  --border-radius: 8px;
+  --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Poppins", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  display: flex;
+  min-height: 100vh;
+  background-color: #f5f7fa;
+  color: #333;
+  line-height: 1.6;
+}
+
+.sidebar {
+  width: 280px;
+  background: linear-gradient(135deg, #2b2d42, #3a0ca3);
+  color: white;
+  padding: 25px 20px;
+  box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 1;
+}
+
+.sidebar h2 {
+  margin-bottom: 30px;
+  font-size: 20px;
+  text-align: center;
+  padding: 15px 10px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: var(--border-radius);
+  line-height: 1.4;
+  border-left: 4px solid var(--primary-color);
+}
+
+.sidebar a {
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  color: white;
+  text-decoration: none;
+  margin: 8px 0;
+  border-radius: var(--border-radius);
+  transition: all 0.3s ease;
+  font-size: 15px;
+}
+
+.sidebar a:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  transform: translateX(5px);
+}
+
+.sidebar a i {
+  margin-right: 12px;
+  width: 20px;
+  text-align: center;
+}
+
+.sidebar a.active {
+  background-color: var(--primary-color);
+  color: white;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+/* 2.kısım */
+.content {
+  flex: 1;
+  padding: 40px;
+  background-color: #f5f7fa;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 30px;
+  gap: 15px;
+}
+
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.page-header h3 {
+  font-size: 24px;
+  color: var(--dark-color);
+  position: relative;
+  padding-bottom: 10px;
+}
+
+.page-header h3::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 60px;
+  height: 3px;
+  background-color: var(--primary-color);
+}
+
+.filter-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-shrink: 0;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  width: 330px;
+  flex-wrap: wrap;
+}
+
+.filter-container label,
+.search-container label {
+  font-weight: 500;
+  color: #555;
+  white-space: nowrap;
+}
+
+.filter-container select {
+  padding: 10px 15px;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: white;
+  width: 200px;
+  transition: all 0.3s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.search-container input[type="text"] {
+  padding: 10px 15px;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: white;
+  flex-grow: 1;
+  min-width: 150px;
+  transition: all 0.3s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.filter-container select:focus,
+.search-container input[type="text"]:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 2px 8px rgba(52, 152, 219, 0.2);
+}
+
+/* 3. kısım */
+.kullanici-listesi {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 25px;
+}
+
+.kullanici {
+  background-color: white;
+  padding: 25px;
+  border-radius: 12px;
+  border: 1px solid #e0e6ed;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  transition: transform 0.3s, box-shadow 0.3s;
+  position: relative;
+}
+
+.kullanici:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+.kullanici-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.kullanici-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.kullanici-type {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.kullanici-type.gold {
+  background-color: #fef9e7;
+  color: #f39c12;
+  border: 1px solid #f1c40f;
+}
+
+.kullanici-type.standart {
+  background-color: #eaf2f8;
+  color: #2980b9;
+  border: 1px solid #3498db;
+}
+
+.kullanici-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.kullanici-actions i {
+  cursor: pointer;
+  font-size: 18px;
+  color: #666;
+  transition: color 0.3s;
+}
+
+.kullanici-actions i:hover {
+  color: #333;
+}
+
+.kullanici-actions .edit-icon:hover {
+  color: #28a745;
+}
+
+.kullanici-actions .delete-icon:hover {
+  color: #dc3545;
+}
+
+.kullanici-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.kullanici p {
+  margin: 0;
+  font-size: 14px;
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+
+.kullanici p strong {
+  color: #34495e;
+  font-weight: 500;
+  display: inline-block;
+  min-width: 70px;
+}
+
+/* Ödeme Bilgileri ve Gecikme Mesajları */
+.payment-history-display {
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  margin-top: 5px;
+  font-size: 14px;
+}
+
+.payment-history-display p {
+  margin-bottom: 5px;
+}
+
+.payment-history-display p:last-child {
+  margin-bottom: 0;
+}
+
+.gecikme {
+  text-align: center;
+  padding: 8px;
+  background-color: rgb(252, 130, 130);
+  color: #fff;
+  border-radius: 6px;
+  font-weight: 600;
+  margin-top: 5px;
+}
+
+/* Ödeme Detayları (details/summary) */
+.payment-details {
+  margin-top: 10px;
+  border: 1px solid #eee;
+  border-radius: 6px;
+  padding: 10px;
+  background-color: #ffffff;
+}
+
+.payment-details summary {
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--primary-color);
+  padding: 5px 0;
+  outline: none;
+}
+
+.payment-details summary::marker {
+  color: #888; /* Ok işaretinin rengi */
+}
+
+.payment-year {
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 1px dashed #eee;
+}
+
+.payment-year:first-child {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
+.payment-year h5 {
+  font-size: 15px;
+  color: #444;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 5px;
+}
+
+.payment-month-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.payment-month-badge {
+  padding: 4px 8px;
+  border-radius: 15px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #555;
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+}
+
+.payment-month-badge.paid {
+  background-color: #e6ffe6; /* Açık yeşil */
+  color: #28a745; /* Koyu yeşil */
+  border-color: #28a745;
+}
+
+.payment-month-badge.unpaid {
+  background-color: #ffe6e6; /* Açık kırmızı */
+  color: #dc3545; /* Koyu kırmızı */
+  border-color: #dc3545;
+}
+
+/* Ödeme Geçmişi Düzenleme Modu */
+.payment-history-edit {
+  margin-top: 15px;
+  padding: 15px;
+  background-color: #f0f8ff; /* Açık mavi arka plan */
+  border: 1px solid #cceeff;
+  border-radius: 8px;
+}
+
+.payment-history-edit label {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 16px;
+  color: var(--dark-color);
+}
+
+.payment-months-edit {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 10px;
+}
+
+.payment-checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  background-color: #ffffff;
+  border: 1px solid #eee;
+  border-radius: 5px;
+  transition: all 0.2s ease;
+}
+
+.payment-checkbox-item:hover {
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.payment-checkbox-item input[type="checkbox"] {
+  appearance: none; /* Varsayılan checkbox stilini kaldır */
+  width: 18px;
+  height: 18px;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.payment-checkbox-item input[type="checkbox"]::before {
+  content: "\2713"; /* Unicode tik işareti */
+  font-size: 14px;
+  color: white;
+  display: none; /* Varsayılan olarak gizle */
+}
+
+.payment-checkbox-item input[type="checkbox"]:checked {
+  background-color: #28a745; /* Yeşil arka plan */
+  border-color: #28a745;
+}
+
+.payment-checkbox-item input[type="checkbox"]:checked::before {
+  display: block; /* Tik işaretini göster */
+}
+
+.payment-checkbox-item input[type="checkbox"]:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: #e9ecef;
+}
+
+.payment-checkbox-item label {
+  margin: 0;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+  flex-grow: 1;
+}
+
+.payment-checkbox-item label.paid-label {
+  color: #28a745; /* Ödenmiş aylar için yeşil metin */
+  font-weight: 500;
+}
+
+.payment-checkbox-item label.unpaid-label {
+  color: #dc3545; /* Ödenmemiş aylar için kırmızı metin */
+  font-weight: 500;
+}
+
+.payment-status-message {
+  margin-top: 15px;
+  padding: 10px 15px;
+  border-radius: 6px;
+  font-weight: 600;
+  text-align: center;
+  font-size: 14px;
+}
+
+.payment-status-message.success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.payment-status-message.warning {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.payment-status-message.danger {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.durum-degistir {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+
+.durum-degistir label {
+  font-size: 14px;
+  color: #555;
+  font-weight: 500;
+}
+
+.durum-degistir select {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: white;
+  flex: 1;
+}
+
+.durum-degistir button {
+  padding: 8px 16px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.durum-degistir button:hover {
+  background-color: #2980b9;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.edit-field {
+  width: calc(100% - 80px);
+  padding: 6px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  margin-left: 5px;
+}
+
+.edit-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+
+.edit-buttons button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.edit-buttons .save-button {
+  background-color: #28a745;
+  color: white;
+}
+
+.edit-buttons .save-button:hover {
+  background-color: #218838;
+}
+
+.edit-buttons .cancel-button {
+  background-color: #6c757d;
+  color: white;
+}
+
+.edit-buttons .cancel-button:hover {
+  background-color: #5a6268;
+}
+
+@media (max-width: 768px) {
+  .kullanici-listesi {
+    grid-template-columns: 1fr;
+  }
+
+  .kullanici-details {
+    flex-direction: column;
+  }
+
+  .odemeBilgisi,
+  .gecikme,
+  .durum-degistir,
+  .edit-buttons {
+    width: 100%;
+  }
+
+  .header-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .filter-container {
+    width: 100%;
+    margin-left: 0;
+    justify-content: flex-start;
+  }
+  .filter-container select {
+    width: auto;
+    flex-grow: 1;
+  }
+
+  .search-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .search-container label,
+  .search-container input {
+    width: 100%;
+  }
+
+  .payment-months-edit {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); /* Daha küçük ekranlarda daha az sütun */
+  }
+}

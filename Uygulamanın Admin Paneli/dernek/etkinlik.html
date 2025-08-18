@@ -1,0 +1,645 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Etkinlik Yönetim Paneli</title>
+          <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/oneriSikayet.css" />
+  <style>
+    /* CDN ile @apply kullanılamaz; bu yüzden klasik CSS */
+    .btn{display:inline-flex;align-items:center;gap:.5rem;border-radius:.75rem;padding:.5rem .75rem;font-size:.875rem;font-weight:600;transition:all .2s;}
+    .btn-primary{background:#2563eb;color:#fff;}
+    .btn-primary:hover{background:#1d4ed8;}
+    .btn-outline{border:1px solid #d1d5db;background:#fff;}
+    .btn-outline:hover{background:#f9fafb;}
+    .btn-danger{background:#dc2626;color:#fff;}
+    .btn-danger:hover{background:#b91c1c;}
+
+    .badge{display:inline-flex;align-items:center;border-radius:9999px;padding:.125rem .625rem;font-size:.75rem;font-weight:600;}
+    .badge-green{background:#dcfce7;color:#166534;}
+    .badge-gray{background:#f3f4f6;color:#1f2937;}
+
+    .input{display:block;width:100%;border:1px solid #d1d5db;border-radius:.75rem;padding:.5rem .75rem;font-size:.875rem;outline:0;}
+    .input:focus{box-shadow:0 0 0 2px rgba(37,99,235,.4);border-color:#2563eb;}
+    .label{font-size:.875rem;font-weight:600;color:#374151;}
+    .card{border:1px solid #e5e7eb;border-radius:1rem;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.04);}
+    .table th{padding:.5rem .75rem;text-align:left;font-size:.75rem;font-weight:700;color:#374151;}
+    .table td{padding:.5rem .75rem;font-size:.875rem;color:#111827;}
+    .modal{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.4);padding:1rem;}
+    .modal.open{display:flex;}
+    .table tr:hover{background:#fafafa;}
+
+     .sidebar{
+    position: fixed;     /* sayfaya sabitle */
+    left: 0; top: 0; bottom: 0;
+    width: 18rem;        /* ~288px, istersen değiştir */
+    overflow: auto;
+    z-index: 30;
+  }
+  .layout{
+    margin-left: 18rem;  /* içerik tarafına aynı kadar boşluk */
+  }
+
+  /* İsteğe bağlı: çok küçük ekranlarda (mobil) sidebar genişliğini azalt */
+  @media (max-width: 640px){
+    .sidebar{ width: 15rem; }
+    .layout{  margin-left: 15rem; }
+  }
+    .kbd{border:1px solid #e5e7eb;border-bottom-width:2px;border-radius:.5rem;background:#f8fafc;padding:.1rem .35rem;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,"Liberation Mono","Courier New",monospace;font-size:.75rem}
+      :root { --sidebar-w: 18rem; }   /* 18rem ≈ 288px */
+
+  /* Sidebar sabit */
+  .sidebar{
+    position: fixed;
+    inset: 0 auto 0 0;     /* top:0; right:auto; bottom:0; left:0 */
+    width: var(--sidebar-w);
+    overflow: auto;
+    z-index: 30;
+  }
+
+  /* Sağ kolon: genişlik = ekran - sidebar */
+  .layout{
+    margin-left: var(--sidebar-w);
+    width: calc(100% - var(--sidebar-w));
+    min-width: 0;          /* flex/min-content sorunlarını engeller */
+  }
+
+  /* Bazı sayfalarda gelen body{display:flex;} kuralını etkisizleştir */
+  body { display: block !important; overflow-x: hidden; }
+
+  /* Mobilde sidebar biraz daralsın, içerik de uyumlansın */
+  @media (max-width: 640px){
+    :root { --sidebar-w: 15rem; }
+  }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+   <div class="sidebar">
+      <h2>YAĞMURLU KÖY DERNEĞİ YÖNETİM PANELİ</h2>
+      <a href="index.html">
+        <i class="fas fa-home"></i>Ana Sayfa
+      </a>
+      <a href="kullaniciKayit.html">
+        <i class="fas fa-user-plus"></i>Kullanıcı Kayıt
+      </a>
+      <a href="kullaniciBilgileri.html">
+        <i class="fas fa-users"></i>Kullanıcı Bilgileri
+      </a>
+      <a href="gelirGider.html">
+        <i class="fas fa-money-bill-wave"></i>Gelir - Gider
+      </a>
+      <a href="post.html">
+        <i class="fas fa-newspaper"></i>Post Paylaşımı
+      </a>
+      <a href="reklam.html">
+        <i class="fas fa-ad"></i>Reklam
+      </a>
+      <a href="poll_admin.html"><i class="fas fa-chart-pie"></i> Anketler</a>
+      <a href="galeri.html">
+        <i class="fas fa-images"></i>Galeri
+      </a>
+      <a href="oneriSikayet.html" >
+        <i class="fas fa-comment-alt"></i>Öneri & Şikayet
+      </a>
+          <a href="isletme.html" ><i class="fas fa-store"></i> İşletmeler</a>
+<a href="bildirim.html"><i class="fas fa-bell"></i> Bildirim Gönder</a>
+<a href="etkinlik.html" class="active"><i class="fas fa-calendar-check"></i> Etkinlikler</a>
+
+       <a href="about.html" >
+        <i class="fas fa-comment-alt"></i>Hakkımızda
+      </a>
+    </div>
+
+    <div class="layout">
+<header class="sticky top-0 z-40 bg-white/80 backdrop-blur border-b border-gray-200">
+  <div class="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between">
+    <h1 class="text-lg font-bold">Yağmurlu Derneği • Etkinlik Yönetim Paneli</h1>
+    <div class="flex items-center gap-2">
+      <span class="text-sm text-gray-600">Dosya: <code class="font-mono bg-gray-100 px-1 rounded"><?php echo htmlspecialchars(basename(__FILE__)); ?></code></span>
+      <button id="btnReloadAll" class="btn btn-outline">Yenile</button>
+    </div>
+  </div>
+</header>
+
+<main class="mx-auto max-w-7xl px-4 py-6 space-y-6">
+  <div class="flex items-center gap-2">
+    <button data-tab="tab-cats" class="btn btn-primary" id="tabCatsBtn">Kategoriler</button>
+    <button data-tab="tab-ev" class="btn btn-outline" id="tabEvBtn">Etkinlikler</button>
+  </div>
+
+  <div id="alert" class="hidden"></div>
+
+  <!-- KATEGORİLER -->
+  <section id="tab-cats" class="space-y-4">
+    <div class="card p-4">
+      <h2 class="text-base font-semibold mb-3">Yeni Kategori Ekle</h2>
+      <form id="catForm" class="grid grid-cols-1 md:grid-cols-4 gap-3">
+        <div>
+          <label class="label">Ad</label>
+          <input id="catName" class="input" placeholder="Örn: Düğün" required />
+        </div>
+        <div class="flex items-end gap-2">
+          <label class="inline-flex items-center gap-2">
+            <input id="catActive" type="checkbox" class="rounded" checked />
+            <span>Aktif</span>
+          </label>
+        </div>
+        <div class="md:col-span-2 flex items-end">
+          <button class="btn btn-primary w-full" type="submit">Ekle</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="card p-4">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-base font-semibold">Kategoriler</h2>
+        <input id="catSearch" class="input w-48" placeholder="Ara..." />
+      </div>
+      <div class="overflow-x-auto">
+        <table class="table w-full">
+          <thead>
+          <tr>
+            <th>ID</th>
+            <th>Ad</th>
+            <th>Durum</th>
+            <th class="text-right">İşlem</th>
+          </tr>
+          </thead>
+          <tbody id="catRows"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ETKİNLİKLER -->
+  <section id="tab-ev" class="hidden space-y-4">
+    <div class="card p-4">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-base font-semibold">Filtrele</h2>
+        <div class="flex items-center gap-2">
+          <button id="quickToday" class="btn btn-outline">Bugün</button>
+          <button id="quick7" class="btn btn-outline">+7 Gün</button>
+          <button id="quickMonth" class="btn btn-outline">Bu Ay</button>
+          <button id="btnNewEv" class="btn btn-primary">Yeni Etkinlik</button>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-6 gap-3">
+        <div class="md:col-span-2">
+          <label class="label">Arama</label>
+          <input id="evQ" class="input" placeholder="Başlık, adres, açıklama..." />
+        </div>
+        <div>
+          <label class="label">Kategori</label>
+          <select id="evCat" class="input"></select>
+        </div>
+        <div>
+          <label class="label">Durum</label>
+          <select id="evStatus" class="input">
+            <option value="">Tümü</option>
+            <option value="1">Aktif</option>
+            <option value="0">Pasif</option>
+          </select>
+        </div>
+        <div>
+          <label class="label">Başlangıç (>=)</label>
+          <input id="evFrom" type="date" class="input" />
+        </div>
+        <div>
+          <label class="label">Bitiş (≤)</label>
+          <input id="evTo" type="date" class="input" />
+        </div>
+        <div class="md:col-span-6 flex items-end justify-end">
+          <button id="btnEvFilter" class="btn btn-outline">Uygula</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card p-4">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-base font-semibold">Etkinlikler</h2>
+        <div class="text-sm text-gray-500">Toplam: <span id="evCount">0</span></div>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="table w-full">
+          <thead>
+          <tr>
+            <th>ID</th>
+            <th>Başlık</th>
+            <th>Kategori</th>
+            <th>Tarih/Saat</th>
+            <th>Tüm gün</th>
+            <th>Durum</th>
+            <th class="text-right">İşlem</th>
+          </tr>
+          </thead>
+          <tbody id="evRows"></tbody>
+        </table>
+      </div>
+      <div class="mt-3 flex justify-center">
+        <button id="btnEvMore" class="btn btn-outline hidden">Daha Fazla</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- MODAL: ETKİNLİK -->
+<div id="evModal" class="modal">
+  <div class="card w-full max-w-3xl p-4 bg-white">
+    <div class="flex items-center justify-between mb-2">
+      <h3 id="evModalTitle" class="text-lg font-semibold">Etkinlik</h3>
+      <button class="btn btn-outline" onclick="closeEvModal()">Kapat</button>
+    </div>
+    <form id="evForm" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <input type="hidden" id="evId" />
+      <div class="md:col-span-2">
+        <label class="label">Başlık</label>
+        <input id="evTitle" class="input" required />
+      </div>
+      <div>
+        <label class="label">Kategori</label>
+        <select id="evCategoryId" class="input" required></select>
+      </div>
+      <div class="md:col-span-2">
+        <label class="label">Açıklama</label>
+        <textarea id="evDesc" class="input" rows="3"></textarea>
+      </div>
+      <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-6 gap-3">
+        <div class="md:col-span-2">
+          <label class="label">Tarih</label>
+          <input id="evDate" type="date" class="input" required />
+        </div>
+        <div>
+          <label class="label">Başlangıç Saati</label>
+          <input id="evStartTime" type="time" class="input" />
+        </div>
+        <div>
+          <label class="label">Bitiş Saati</label>
+          <input id="evEndTime" type="time" class="input" />
+        </div>
+        <div class="flex items-end gap-2">
+          <label class="inline-flex items-center gap-2">
+            <input id="evAllDay" type="checkbox" class="rounded" />
+            <span>Tüm gün</span>
+          </label>
+        </div>
+        <div class="flex items-end gap-2">
+          <label class="inline-flex items-center gap-2">
+            <input id="evActive" type="checkbox" class="rounded" checked />
+            <span>Aktif</span>
+          </label>
+        </div>
+      </div>
+      <div class="md:col-span-2">
+        <label class="label">Adres</label>
+        <input id="evAddress" class="input" />
+      </div>
+
+      <div class="md:col-span-2 flex justify-end gap-2 mt-2">
+        <button type="button" class="btn btn-outline" onclick="closeEvModal()">Vazgeç</button>
+        <button class="btn btn-primary" type="submit">Kaydet</button>
+      </div>
+    </form>
+  </div>
+</div>
+</div>
+<script>
+// ===== CONFIG =====
+const API_BASE = 'https://erkayasoft.com/api/event_admin.php';
+const API = {
+  listCats: API_BASE + '?action=list_categories',
+  createCat: API_BASE + '?action=create_category',
+  updateCat: API_BASE + '?action=update_category',
+  deleteCat: API_BASE + '?action=delete_category',
+  listEvents: API_BASE + '?action=list_events',
+  createEv: API_BASE + '?action=create_event',
+  updateEv: API_BASE + '?action=update_event',
+  toggleEv: API_BASE + '?action=toggle_event_active',
+  deleteEv: API_BASE + '?action=delete_event',
+};
+const ADMIN_TOKEN = ''; // PHP'de ADMIN_TOKEN doldurduysan aynı değeri buraya yaz
+
+// ===== Helpers =====
+const alertBox = document.getElementById('alert');
+function showAlert(type, msg) {
+  const base = 'rounded-lg p-3 border my-2';
+  const styles = type === 'error'
+    ? 'bg-red-50 border-red-200 text-red-700'
+    : 'bg-green-50 border-green-200 text-green-700';
+  alertBox.className = base + ' ' + styles;
+  alertBox.innerText = msg;
+  alertBox.classList.remove('hidden');
+  setTimeout(() => alertBox.classList.add('hidden'), 2500);
+}
+function headersJson() {
+  const h = {'Content-Type':'application/json'};
+  if (ADMIN_TOKEN) h['X-Admin-Token'] = ADMIN_TOKEN;
+  return h;
+}
+function esc(s){return (s||'').replace(/[&<>"]/g,c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));}
+
+// ===== Tabs =====
+const tabCatsBtn = document.getElementById('tabCatsBtn');
+const tabEvBtn = document.getElementById('tabEvBtn');
+const catsTab = document.getElementById('tab-cats');
+const evTab = document.getElementById('tab-ev');
+function setTab(tab){
+  if(tab==='tab-cats'){
+    catsTab.classList.remove('hidden'); evTab.classList.add('hidden');
+    tabCatsBtn.classList.add('btn-primary'); tabCatsBtn.classList.remove('btn-outline');
+    tabEvBtn.classList.remove('btn-primary'); tabEvBtn.classList.add('btn-outline');
+  }else{
+    evTab.classList.remove('hidden'); catsTab.classList.add('hidden');
+    tabEvBtn.classList.add('btn-primary'); tabEvBtn.classList.remove('btn-outline');
+    tabCatsBtn.classList.remove('btn-primary'); tabCatsBtn.classList.add('btn-outline');
+  }
+}
+tabCatsBtn.addEventListener('click', ()=>setTab('tab-cats'));
+tabEvBtn.addEventListener('click', ()=>setTab('tab-ev'));
+
+// ===== Categories =====
+let CATS = [];
+const catRows = document.getElementById('catRows');
+const catForm = document.getElementById('catForm');
+const catName = document.getElementById('catName');
+const catActive = document.getElementById('catActive');
+const catSearch = document.getElementById('catSearch');
+
+async function loadCategories(){
+  try{
+    const r = await fetch(API.listCats);
+    const b = await r.json();
+    CATS = Array.isArray(b.data) ? b.data : [];
+    renderCategories();
+    fillCatSelects();
+  }catch(e){ showAlert('error','Kategoriler yüklenemedi'); }
+}
+function renderCategories(){
+  const q = catSearch.value.trim().toLowerCase();
+  catRows.innerHTML = '';
+  CATS.filter(c=>!q || (c.name||'').toLowerCase().includes(q)).forEach(c=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${c.id}</td>
+      <td>${esc(c.name)}</td>
+      <td>${(c.is_active==1||c.is_active===true)?'<span class="badge badge-green">Aktif</span>':'<span class="badge badge-gray">Pasif</span>'}</td>
+      <td class="text-right">
+        <button class="btn btn-outline mr-2" data-edit="${c.id}">Düzenle</button>
+        <button class="btn btn-danger" data-del="${c.id}">Sil</button>
+      </td>`;
+    catRows.appendChild(tr);
+  });
+  catRows.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>editCategory(+b.dataset.edit)));
+  catRows.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>deleteCategory(+b.dataset.del)));
+}
+catSearch.addEventListener('input', renderCategories);
+
+catForm.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const payload = { name: catName.value.trim(), is_active: catActive.checked?1:0 };
+  try{
+    const r = await fetch(API.createCat, {method:'POST', headers:headersJson(), body:JSON.stringify(payload)});
+    const b = await r.json();
+    if(b.success){ showAlert('ok','Kategori eklendi'); catForm.reset(); catActive.checked=true; await loadCategories(); }
+    else showAlert('error', b.error||'Hata');
+  }catch(e){ showAlert('error','Hata'); }
+});
+async function editCategory(id){
+  const c = CATS.find(x=>+x.id===id); if(!c) return;
+  const name = prompt('Kategori adı', c.name||''); if(name===null) return;
+  const active = confirm('Kategori AKTİF olsun mu? (Tamam=Aktif / İptal=Pasif)');
+  try{
+    const r = await fetch(API.updateCat, {method:'POST', headers:headersJson(), body:JSON.stringify({id, name, is_active: active?1:0})});
+    const b = await r.json();
+    if(b.success){ showAlert('ok','Güncellendi'); await loadCategories(); }
+    else showAlert('error', b.error||'Güncellenemedi');
+  }catch(e){ showAlert('error','Güncellenemedi'); }
+}
+async function deleteCategory(id){
+  if(!confirm('Bu kategoriyi silmek istiyor musunuz?')) return;
+  try{
+    const r = await fetch(API.deleteCat, {method:'POST', headers:headersJson(), body:JSON.stringify({id})});
+    const b = await r.json();
+    if(b.success){ showAlert('ok','Silindi'); await loadCategories(); }
+    else showAlert('error', b.error||'Silinemedi');
+  }catch(e){ showAlert('error','Silinemedi'); }
+}
+function fillCatSelects(){
+  const evCat = document.getElementById('evCat');
+  const evCategoryId = document.getElementById('evCategoryId');
+  evCat.innerHTML = '<option value="">Tümü</option>'+ CATS.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');
+  evCategoryId.innerHTML = CATS.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');
+}
+
+// ===== Events =====
+let EV_PAGE=1, EV_HAS_MORE=false, EV_ITEMS=[];
+const evRows = document.getElementById('evRows');
+const evCountEl = document.getElementById('evCount');
+const btnEvMore = document.getElementById('btnEvMore');
+
+async function loadEvents({reset=true}={}){
+  if(reset){ EV_PAGE=1; EV_ITEMS=[]; }
+  const q = document.getElementById('evQ').value.trim();
+  const categoryId = document.getElementById('evCat').value;
+  const status = document.getElementById('evStatus').value;
+  const fromDate = document.getElementById('evFrom').value;
+  const toDate = document.getElementById('evTo').value;
+  const params = new URLSearchParams({ q, categoryId, status, fromDate, toDate, page: EV_PAGE, pageSize: 20, sort: 'date_desc' });
+  try{
+    const r = await fetch(API.listEvents + '&' + params.toString());
+    const b = await r.json();
+    const list = Array.isArray(b.data)? b.data : [];
+    EV_ITEMS = EV_ITEMS.concat(list);
+    EV_HAS_MORE = !!b.nextPage;
+    if(EV_HAS_MORE) EV_PAGE = b.nextPage;
+    renderEvents();
+  }catch(e){ showAlert('error','Etkinlikler yüklenemedi'); }
+}
+function fmtDt(s){
+  if(!s) return '';
+  const d = new Date(s.replace(' ','T'));
+  const pad=n=>n.toString().padStart(2,'0');
+  return `${pad(d.getDate())}.${pad(d.getMonth()+1)}.${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+function renderEvents(){
+  evRows.innerHTML='';
+  evCountEl.textContent = EV_ITEMS.length;
+  EV_ITEMS.forEach(x=>{
+    const when = `${fmtDt(x.start_at)} → ${fmtDt(x.end_at)}`;
+    const active = (x.is_active==1||x.is_active===true);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${x.id}</td>
+      <td class="font-medium">${esc(x.title)}</td>
+      <td>${esc(x.category_name||'')}</td>
+      <td>${esc(when)}</td>
+      <td>${x.all_day ? 'Evet' : 'Hayır'}</td>
+      <td>${active?'<span class="badge badge-green">Aktif</span>':'<span class="badge badge-gray">Pasif</span>'}</td>
+      <td class="text-right space-x-2">
+        <button class="btn btn-outline" data-edit="${x.id}">Düzenle</button>
+        <button class="btn btn-outline" data-toggle="${x.id}" data-state="${active?1:0}">${active?'Pasifleştir':'Aktifleştir'}</button>
+        <button class="btn btn-danger" data-del="${x.id}">Sil</button>
+      </td>`;
+    evRows.appendChild(tr);
+  });
+  btnEvMore.classList.toggle('hidden', !EV_HAS_MORE);
+  evRows.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>openEvEdit(+b.dataset.edit)));
+  evRows.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>deleteEvent(+b.dataset.del)));
+  evRows.querySelectorAll('[data-toggle]').forEach(b=>b.addEventListener('click',()=>toggleEvent(+b.dataset.toggle, b.dataset.state==='1')));
+}
+document.getElementById('btnEvFilter').addEventListener('click', ()=>loadEvents({reset:true}));
+document.getElementById('evQ').addEventListener('keydown', e=>{ if(e.key==='Enter') loadEvents({reset:true}); });
+btnEvMore.addEventListener('click', ()=>loadEvents({reset:false}));
+
+// Hızlı tarih filtreleri
+document.getElementById('quickToday').addEventListener('click', ()=>{
+  const d=new Date(); const pad=n=>n.toString().padStart(2,'0');
+  const s=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  document.getElementById('evFrom').value=s; document.getElementById('evTo').value=s;
+  loadEvents({reset:true});
+});
+document.getElementById('quick7').addEventListener('click', ()=>{
+  const d=new Date(); const pad=n=>n.toString().padStart(2,'0');
+  const s=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  const d2=new Date(); d2.setDate(d.getDate()+7);
+  const e=`${d2.getFullYear()}-${pad(d2.getMonth()+1)}-${pad(d2.getDate())}`;
+  document.getElementById('evFrom').value=s; document.getElementById('evTo').value=e;
+  loadEvents({reset:true});
+});
+document.getElementById('quickMonth').addEventListener('click', ()=>{
+  const d=new Date(); const pad=n=>n.toString().padStart(2,'0');
+  const s=`${d.getFullYear()}-${pad(d.getMonth()+1)}-01`;
+  const eDate=new Date(d.getFullYear(), d.getMonth()+1, 0);
+  const e=`${eDate.getFullYear()}-${pad(eDate.getMonth()+1)}-${pad(eDate.getDate())}`;
+  document.getElementById('evFrom').value=s; document.getElementById('evTo').value=e;
+  loadEvents({reset:true});
+});
+
+// ===== Modal: Event Create/Update =====
+const evModal = document.getElementById('evModal');
+const evForm = document.getElementById('evForm');
+const evModalTitle = document.getElementById('evModalTitle');
+
+function openEvModal(){ evModal.classList.add('open'); }
+function closeEvModal(){ evModal.classList.remove('open'); }
+window.closeEvModal = closeEvModal;
+
+document.getElementById('btnNewEv').addEventListener('click', openEvNew);
+
+function openEvNew(){
+  evModalTitle.textContent = 'Yeni Etkinlik';
+  evForm.reset();
+  document.getElementById('evId').value = '';
+  document.getElementById('evActive').checked = true;
+  document.getElementById('evAllDay').checked = false;
+  handleAllDayToggle();
+  openEvModal();
+}
+function openEvEdit(id){
+  const x = EV_ITEMS.find(i=>+i.id===id);
+  if(!x) return;
+  evModalTitle.textContent = `Etkinlik Düzenle #${id}`;
+  document.getElementById('evId').value = x.id;
+  document.getElementById('evTitle').value = x.title||'';
+  document.getElementById('evCategoryId').value = x.category_id||'';
+  document.getElementById('evDesc').value = x.description||'';
+  document.getElementById('evAddress').value = x.address||'';
+
+  const start = new Date((x.start_at||'').replace(' ','T'));
+  const end = new Date((x.end_at||'').replace(' ','T'));
+  const pad=n=>n.toString().padStart(2,'0');
+  const dateVal = `${start.getFullYear()}-${pad(start.getMonth()+1)}-${pad(start.getDate())}`;
+  document.getElementById('evDate').value = dateVal;
+  document.getElementById('evStartTime').value = `${pad(start.getHours())}:${pad(start.getMinutes())}`;
+  document.getElementById('evEndTime').value = `${pad(end.getHours())}:${pad(end.getMinutes())}`;
+
+  document.getElementById('evAllDay').checked = !!x.all_day;
+  document.getElementById('evActive').checked = (x.is_active==1||x.is_active===true);
+  handleAllDayToggle();
+  openEvModal();
+}
+
+document.getElementById('evAllDay').addEventListener('change', handleAllDayToggle);
+function handleAllDayToggle(){
+  const all = document.getElementById('evAllDay').checked;
+  document.getElementById('evStartTime').disabled = all;
+  document.getElementById('evEndTime').disabled = all;
+}
+
+evForm.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const id = document.getElementById('evId').value;
+  const title = document.getElementById('evTitle').value.trim();
+  const category_id = +document.getElementById('evCategoryId').value;
+  const description = document.getElementById('evDesc').value.trim();
+  const address = document.getElementById('evAddress').value.trim();
+  const date = document.getElementById('evDate').value; // YYYY-MM-DD
+  const all_day = document.getElementById('evAllDay').checked ? 1 : 0;
+  const is_active = document.getElementById('evActive').checked ? 1 : 0;
+
+  let start_at = '', end_at = '';
+  if(all_day){
+    start_at = `${date} 00:00:00`;
+    end_at   = `${date} 23:59:59`;
+  }else{
+    const st = document.getElementById('evStartTime').value || '00:00';
+    const en = document.getElementById('evEndTime').value || '23:59';
+    start_at = `${date} ${st}:00`;
+    end_at   = `${date} ${en}:00`;
+  }
+
+  const payload = { title, category_id, description, address, start_at, end_at, all_day, is_active };
+  const create = !id;
+
+  try{
+    const ep = create ? API.createEv : API.updateEv;
+    if(!create) payload.id = +id;
+    const r = await fetch(ep, { method:'POST', headers:headersJson(), body:JSON.stringify(payload) });
+    const b = await r.json();
+    if(b.success){
+      showAlert('ok', create?'Etkinlik eklendi':'Güncellendi');
+      closeEvModal();
+      await loadEvents({reset:true});
+    }else{
+      showAlert('error', b.error||'İşlem başarısız');
+    }
+  }catch(e){ showAlert('error','İşlem başarısız'); }
+});
+
+async function toggleEvent(id, current){
+  try{
+    const r = await fetch(API.toggleEv, {method:'POST', headers:headersJson(), body:JSON.stringify({id, is_active: current?0:1})});
+    const b = await r.json();
+    if(b.success){ showAlert('ok','Durum güncellendi'); await loadEvents({reset:true}); }
+    else showAlert('error', b.error||'Güncellenemedi');
+  }catch(e){ showAlert('error','Güncellenemedi'); }
+}
+async function deleteEvent(id){
+  if(!confirm('Bu etkinliği silmek istiyor musunuz?')) return;
+  try{
+    const r = await fetch(API.deleteEv, {method:'POST', headers:headersJson(), body:JSON.stringify({id})});
+    const b = await r.json();
+    if(b.success){ showAlert('ok','Silindi'); await loadEvents({reset:true}); }
+    else showAlert('error', b.error||'Silinemedi');
+  }catch(e){ showAlert('error','Silinemedi'); }
+}
+
+// ===== Boot =====
+document.getElementById('btnReloadAll').addEventListener('click', ()=>{ loadCategories(); loadEvents({reset:true}); });
+setTab('tab-cats');
+loadCategories().then(()=>loadEvents({reset:true}));
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+

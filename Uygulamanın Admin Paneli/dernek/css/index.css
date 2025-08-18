@@ -1,0 +1,211 @@
+:root {
+  --primary-color: #4361ee;
+  --secondary-color: #3f37c9;
+  --dark-color: #2b2d42;
+  --light-color: #f8f9fa;
+  --success-color: #4cc9f0;
+  --danger-color: #f72585;
+  --warning-color: #f8961e;
+  --border-radius: 8px;
+  --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Poppins", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  display: flex;
+  min-height: 100vh;
+  background-color: #f5f7fa;
+  color: #333;
+  line-height: 1.6;
+}
+
+.sidebar {
+  width: 280px;
+  background: linear-gradient(135deg, #2b2d42, #3a0ca3);
+  color: white;
+  padding: 25px 20px;
+  box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 1;
+}
+
+.sidebar h2 {
+  margin-bottom: 30px;
+  font-size: 20px;
+  text-align: center;
+  padding: 15px 10px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: var(--border-radius);
+  line-height: 1.4;
+  border-left: 4px solid var(--primary-color);
+}
+
+.sidebar a {
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  color: white;
+  text-decoration: none;
+  margin: 8px 0;
+  border-radius: var(--border-radius);
+  transition: all 0.3s ease;
+  font-size: 15px;
+}
+
+.sidebar a:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  transform: translateX(5px);
+}
+
+.sidebar a i {
+  margin-right: 12px;
+  width: 20px;
+  text-align: center;
+}
+
+.sidebar a.active {
+  background-color: var(--primary-color);
+  color: white;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+/* Main content */
+.main {
+  flex: 1;
+  padding: 30px;
+  background-color: #f4f4f4;
+}
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 25px;
+  margin-bottom: 30px;
+}
+.card {
+  background-color: white;
+  padding: 25px;
+  border-radius: 12px;
+  flex: 1 1 200px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+.card h3 {
+  margin-bottom: 15px;
+  color: #2c3e50;
+  font-size: 18px;
+  font-weight: 600;
+}
+.card p {
+  font-size: 24px;
+  color: #3498db;
+  font-weight: bold;
+}
+
+/* Geciken liste */
+.list {
+  margin-bottom: 25px;
+}
+.list h3 {
+  padding-bottom: 10px;
+  border-bottom: 2px solid #eee;
+  margin-bottom: 15px;
+}
+.list-container {
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+.list ul {
+  margin-top: 10px;
+  list-style-type: none;
+  padding-left: 0;
+}
+.list li {
+  padding: 8px 0;
+  border-bottom: 1px dashed #eee;
+  color: #555;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+}
+.list li:before {
+  content: "→";
+  margin-right: 10px;
+  color: #e74c3c;
+}
+.name {
+  margin-right: 10px;
+}
+.late-days {
+  background-color: #ffebee;
+  color: #e74c3c;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.late-info {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+/* Scrollbar styling */
+.list-container::-webkit-scrollbar {
+  width: 6px;
+}
+.list-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+.list-container::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+.list-container::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Galeri */
+.gallery {
+  display: flex;
+  gap: 15px;
+  margin-top: 15px;
+}
+.gallery img {
+  width: 200px;
+  height: 200px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 2px solid #eee;
+  transition: transform 0.3s ease;
+}
+.gallery img:hover {
+  transform: scale(1.05);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  body {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: 100%;
+    padding: 15px;
+  }
+  .sidebar h2 {
+    font-size: 18px;
+    padding: 10px;
+  }
+}

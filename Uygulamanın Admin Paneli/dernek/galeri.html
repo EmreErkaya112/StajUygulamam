@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Galeri</title>
+  <link rel="stylesheet" href="css/kullaniciKayit.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+    /* --- Genel Layout --- */
+    body { margin:0; display:flex; height:100vh; font-family:Arial,sans-serif; }
+   
+    .main-content {
+      flex:1; padding:1rem; box-sizing:border-box; overflow-y:auto;
+      background:#f5f7fa;
+    }
+    .page-header {
+      display:flex; justify-content:space-between; align-items:center;
+    }
+    .add-btn {
+      background:#28a745; color:#fff; border:none;
+      padding:.5rem 1rem; cursor:pointer; border-radius:4px;
+      font-size:0.95rem; transition:background .2s;
+    }
+    .add-btn:hover { background:#218838; }
+
+    /* --- Galeri Grid --- */
+    .gallery-grid {
+      display:grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px,1fr));
+      gap:1rem; margin-top:1rem;
+    }
+    .gallery-item {
+      position:relative;
+      overflow:hidden;
+      border-radius:8px;
+      background:#fff;
+      box-shadow:0 2px 6px rgba(0,0,0,0.1);
+      transition:transform .3s;
+    }
+    .gallery-item:hover {
+      transform: translateY(-4px);
+    }
+    .gallery-item img {
+      width:100%;
+      height:160px;
+      object-fit:cover;     /* en-boy oranını koruyarak kırpma */
+      object-position:center;
+      display:block;
+      transition:transform .3s;
+    }
+    .gallery-item:hover img {
+      transform: scale(1.05);
+    }
+    .gallery-item-actions {
+      position:absolute;
+      top:8px; right:8px;
+      display:flex; gap:4px;
+    }
+    .gallery-item-actions button {
+      background:rgba(0,0,0,0.6);
+      border:none; color:#fff;
+      padding:6px; border-radius:4px;
+      cursor:pointer; font-size:0.85rem;
+      transition:background .2s;
+    }
+    .gallery-item-actions button:hover {
+      background:rgba(0,0,0,0.8);
+    }
+
+    /* --- Modallar --- */
+    .modal-overlay {
+      position:fixed; top:0; left:0; right:0; bottom:0;
+      background:rgba(0,0,0,0.6);
+      display:none; align-items:center; justify-content:center;
+      z-index:1000;
+    }
+    .modal-overlay.active { display:flex; }
+    .modal-content {
+      position:relative;
+      background:#fff; padding:1rem; border-radius:8px;
+      max-width:90vw; max-height:90vh; box-sizing:border-box;
+      box-shadow:0 4px 12px rgba(0,0,0,0.3);
+      overflow:auto;
+    }
+    .modal-header {
+      display:flex; justify-content:flex-end;
+    }
+    .modal-header .close-btn {
+      background:none; border:none; font-size:1.4rem;
+      cursor:pointer; color:#333;
+      transition:color .2s;
+    }
+    .modal-header .close-btn:hover { color:#000; }
+
+    /* --- Tam Ekran Fotoğraf --- */
+    .full-image {
+      max-width:100%; max-height:80vh;
+      border-radius:6px;
+      display:block; margin:0 auto;
+    }
+
+    /* --- Yükleme Modal --- */
+    #addPhotoForm {
+      display:flex; flex-direction:column;
+      gap:.75rem;
+    }
+    #photoPreview {
+      width:100%; height:160px;
+      border:2px dashed #ccc; border-radius:6px;
+      display:flex; align-items:center; justify-content:center;
+      overflow:hidden; background:#fafafa;
+      transition:border-color .2s;
+    }
+    #photoPreview img {
+      width:100%; object-fit:contain;
+    }
+    #photoPreview:hover { border-color:#888; }
+    #addPhotoForm button {
+      align-self:flex-end; padding:.5rem 1rem;
+      border:none; border-radius:4px; cursor:pointer;
+      background:#28a745; color:#fff;
+      transition:background .2s;
+    }
+    #addPhotoForm button:hover { background:#218838; }
+    #addPhotoForm button[type="button"] {
+      background:#ccc; color:#333; margin-right:.5rem;
+    }
+    #addPhotoForm button[type="button"]:hover { background:#bbb; }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>Yağmurlu Köy Derneği</h2>
+    <a href="index.html"><i class="fas fa-home"></i> Ana Sayfa</a>
+    <a href="kullaniciKayit.html"><i class="fas fa-user-plus"></i> Kullanıcı Kayıt</a>
+    <a href="kullaniciBilgileri.html"><i class="fas fa-users"></i> Kullanıcı Bilgileri</a>
+    <a href="gelirGider.html"><i class="fas fa-money-bill-wave"></i> Gelir – Gider</a>
+    <a href="post.html"><i class="fas fa-newspaper"></i> Post Paylaşımı</a>
+    <a href="reklam.html"><i class="fas fa-ad"></i> Reklam</a>
+    <a href="poll_admin.html"><i class="fas fa-chart-pie"></i> Anketler</a>
+    <a href="galeri.html" class="active"><i class="fas fa-images"></i> Galeri</a>
+    <a href="oneriSikayet.html"><i class="fas fa-comment-alt"></i> Öneri & Şikayet</a>
+    <a href="isletme.html"><i class="fas fa-store"></i> İşletmeler</a>
+<a href="bildirim.html"><i class="fas fa-bell"></i> Bildirim Gönder</a>
+<a href="etkinlik.html"><i class="fas fa-calendar-check"></i> Etkinlikler</a>
+
+           <a href="about.html" >
+        <i class="fas fa-comment-alt"></i>Hakkımızda
+      </a>
+  </div>
+
+  <div class="main-content">
+    <div class="page-header">
+      <h3>Galeri</h3>
+      <button id="addPhotoBtn" class="add-btn">
+        <i class="fas fa-plus"></i> Yeni Fotoğraf Yükle
+      </button>
+    </div>
+    <div class="gallery-grid" id="galleryGrid"></div>
+  </div>
+
+  <!-- Upload Modal -->
+  <div class="modal-overlay" id="addPhotoModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4>Yeni Fotoğraf Yükle</h4>
+        <button class="close-btn" id="closeAddPhotoModalBtn">&times;</button>
+      </div>
+      <form id="addPhotoForm">
+        <input type="file" id="photoUpload" name="image" accept="image/*" required>
+        <div class="image-preview" id="photoPreview"><span>Önizleme Yok</span></div>
+        <div style="text-align:right; margin-top:1rem;">
+          <button type="button" id="cancelAddPhotoBtn">İptal</button>
+          <button type="submit">Yükle</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Fullscreen Modal -->
+  <div class="modal-overlay" id="fullScreenImageModal">
+    <div class="modal-content">
+      <button class="close-btn" id="closeFullScreenImageBtn">&times;</button>
+      <img id="fullScreenImage" class="full-image" src="" alt="Büyütülmüş Fotoğraf">
+    </div>
+  </div>
+
+  <script>
+    const apiBase       = 'https://erkayasoft.com/api';
+    const galleryGrid   = document.getElementById('galleryGrid');
+    const addPhotoBtn   = document.getElementById('addPhotoBtn');
+    const addPhotoModal = document.getElementById('addPhotoModal');
+    const closeAddBtn   = document.getElementById('closeAddPhotoModalBtn');
+    const cancelAddBtn  = document.getElementById('cancelAddPhotoBtn');
+    const addPhotoForm  = document.getElementById('addPhotoForm');
+    const photoUpload   = document.getElementById('photoUpload');
+    const photoPreview  = document.getElementById('photoPreview');
+    const fullModal     = document.getElementById('fullScreenImageModal');
+    const closeFullBtn  = document.getElementById('closeFullScreenImageBtn');
+    const fullImage     = document.getElementById('fullScreenImage');
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadGallery();
+      setupUploadModal();
+      setupFullModal();
+    });
+
+    // Galeriyi yükle
+    async function loadGallery() {
+      galleryGrid.innerHTML = '';
+      try {
+        const res  = await fetch(`${apiBase}/list_images.php`);
+        const urls = await res.json();
+        urls.forEach(url => {
+          const div = document.createElement('div');
+          div.className = 'gallery-item';
+          div.innerHTML = `
+            <img src="${url}">
+            <div class="gallery-item-actions">
+              <button class="view"><i class="fas fa-eye"></i></button>
+              <button class="delete"><i class="fas fa-trash"></i></button>
+            </div>`;
+          // Görüntüle
+          div.querySelector('.view').onclick = () => {
+            fullImage.src = url;
+            fullModal.classList.add('active');
+          };
+          // Sil
+          div.querySelector('.delete').onclick = async () => {
+            if (!confirm('Bu fotoğrafı silmek istiyor musunuz?')) return;
+            try {
+              const resp = await fetch(`${apiBase}/delete_image.php`, {
+                method: 'POST',
+                headers:{'Content-Type':'application/json'},
+                body: JSON.stringify({ url })
+              });
+              const j = await resp.json();
+              if (!j.success) throw j.error||'Silme hatası';
+              loadGallery();
+            } catch (err) {
+              alert('Hata: '+err);
+            }
+          };
+          galleryGrid.appendChild(div);
+        });
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    // Yükleme modalı
+    function setupUploadModal() {
+      addPhotoBtn.onclick = () => {
+        addPhotoModal.classList.add('active');
+        addPhotoForm.reset();
+        photoPreview.innerHTML = '<span>Önizleme Yok</span>';
+      };
+      closeAddBtn.onclick = cancelAddBtn.onclick = () =>
+        addPhotoModal.classList.remove('active');
+
+      photoUpload.onchange = e => {
+        const f = e.target.files[0];
+        if (!f) return photoPreview.innerHTML = '<span>Önizleme Yok</span>';
+        const r = new FileReader();
+        r.onload = ev => photoPreview.innerHTML = `<img src="${ev.target.result}">`;
+        r.readAsDataURL(f);
+      };
+
+      addPhotoForm.onsubmit = async e => {
+        e.preventDefault();
+        const file = photoUpload.files[0];
+        const fd   = new FormData();
+        fd.append('image', file);
+        try {
+          const res = await fetch(`${apiBase}/upload.php`, { method:'POST', body: fd });
+          const j   = await res.json();
+          if (!j.success) throw j.error||'Upload hatası';
+          addPhotoModal.classList.remove('active');
+          loadGallery();
+        } catch (err) {
+          alert('Hata: '+err);
+        }
+      };
+    }
+
+    // Tam ekran modalı
+    function setupFullModal() {
+      closeFullBtn.onclick = () => fullModal.classList.remove('active');
+    }
+  </script>
+</body>
+</html>

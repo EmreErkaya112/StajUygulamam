@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+   <link rel="stylesheet" href="css/oneriSikayet.css" />
+  <title>Hakkımızda Yönetimi</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+    }
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    h1 {
+      margin-top: 0;
+      text-align: center;
+      color: #333;
+    }
+    label {
+      display: block;
+      margin: 15px 0 5px;
+      font-weight: bold;
+      color: #555;
+    }
+    textarea,
+    input[type="text"],
+    input[type="email"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    button {
+      display: block;
+      width: 100%;
+      margin-top: 20px;
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 4px;
+      background: #007bff;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:disabled {
+      background: #aaa;
+      cursor: not-allowed;
+    }
+    button:hover:not(:disabled) {
+      background: #0056b3;
+    }
+    .message {
+      margin-top: 20px;
+      padding: 12px;
+      border-radius: 4px;
+      display: none;
+      font-size: 14px;
+    }
+    .message.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .message.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    /* Mevcut stilin en üstüne ekle */
+body {
+  display: flex;        /* Sidebar + container yatayda flex */
+  margin: 0;
+  padding: 0;
+}
+
+/* .sidebar zaten sabit genişlikte, ona dokunmana gerek yok */
+
+/* .container yerine kullandığın sınıfı aşağıdaki gibi değiştir: */
+.container {
+  flex: 1;              /* Kalan tüm yatay alanı kaplasın */
+  margin: 40px;         /* Dilersen yatayda da 40px boşluk bırakırsın */
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  max-width: none;      /* Önceki max-width:800px’i kaldır */
+}
+
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+      <h2>YAĞMURLU KÖY DERNEĞİ YÖNETİM PANELİ</h2>
+      <a href="index.html">
+        <i class="fas fa-home"></i>Ana Sayfa
+      </a>
+      <a href="kullaniciKayit.html">
+        <i class="fas fa-user-plus"></i>Kullanıcı Kayıt
+      </a>
+      <a href="kullaniciBilgileri.html">
+        <i class="fas fa-users"></i>Kullanıcı Bilgileri
+      </a>
+      <a href="gelirGider.html">
+        <i class="fas fa-money-bill-wave"></i>Gelir - Gider
+      </a>
+      <a href="post.html">
+        <i class="fas fa-newspaper"></i>Post Paylaşımı
+      </a>
+      <a href="reklam.html">
+        <i class="fas fa-ad"></i>Reklam
+      </a>
+      <a href="poll_admin.html"><i class="fas fa-chart-pie"></i> Anketler</a>
+      <a href="galeri.html">
+        <i class="fas fa-images"></i>Galeri
+      </a>
+      <a href="oneriSikayet.html" >
+        <i class="fas fa-comment-alt"></i>Öneri & Şikayet
+      </a>
+          <a href="isletme.html"><i class="fas fa-store"></i> İşletmeler</a>
+<a href="bildirim.html"><i class="fas fa-bell"></i> Bildirim Gönder</a>
+<a href="etkinlik.html"><i class="fas fa-calendar-check"></i> Etkinlikler</a>
+
+       <a href="about.html" class="active">
+        <i class="fas fa-comment-alt"></i>Hakkımızda
+      </a>
+    </div>
+  <div class="container">
+    <h1>Hakkımızda Yönetimi</h1>
+    <label for="aboutText">Hakkımızda Metni</label>
+    <textarea id="aboutText" rows="6"></textarea>
+
+    <label for="phone">Telefon</label>
+    <input type="text" id="phone" placeholder="+90 532 123 45 67">
+
+    <label for="email">E‑posta</label>
+    <input type="email" id="email" placeholder="info@firma.com">
+
+    <button id="saveBtn">Kaydet</button>
+    <div id="message" class="message"></div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const aboutText = document.getElementById('aboutText');
+      const phoneInput = document.getElementById('phone');
+      const emailInput = document.getElementById('email');
+      const saveBtn = document.getElementById('saveBtn');
+      const messageDiv = document.getElementById('message');
+
+      function showMessage(text, type) {
+        messageDiv.textContent = text;
+        messageDiv.className = 'message ' + type;
+        messageDiv.style.display = 'block';
+        setTimeout(() => {
+          messageDiv.style.display = 'none';
+        }, 5000);
+      }
+
+      // Verileri yükle
+      fetch('https://erkayasoft.com/api/get_about.php')
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            aboutText.value = data.data.about_text || '';
+            phoneInput.value = data.data.contact_phone || '';
+            emailInput.value = data.data.contact_email || '';
+          } else {
+            showMessage('Veri alınırken hata: ' + (data.message || data.error), 'error');
+          }
+        })
+        .catch(err => {
+          showMessage('Sunucuya bağlanırken hata', 'error');
+          console.error(err);
+        });
+
+      // Kaydet butonu
+      saveBtn.addEventListener('click', () => {
+        saveBtn.disabled = true;
+        const payload = {
+          about_text: aboutText.value.trim(),
+          contact_phone: phoneInput.value.trim(),
+          contact_email: emailInput.value.trim()
+        };
+        fetch('https://erkayasoft.com/api/update_about.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            showMessage('Güncelleme başarılı', 'success');
+          } else {
+            showMessage('Güncelleme hatası: ' + (data.error || data.message), 'error');
+          }
+        })
+        .catch(err => {
+          showMessage('Sunucu hatası', 'error');
+          console.error(err);
+        })
+        .finally(() => {
+          saveBtn.disabled = false;
+        });
+      });
+    });
+  </script>
+</body>
+</html>

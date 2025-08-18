@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Post Paylaşımı</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="css/post.css" />
+  <style>
+    /* Küçük dokunuşlar */
+    .page-header{display:flex;justify-content:space-between;align-items:center;gap:.5rem}
+    .filters{display:flex;flex-wrap:wrap;gap:.5rem;margin:.75rem 0}
+    .filters select,.filters input{padding:.45rem .6rem;border:1px solid #ddd;border-radius:6px}
+    .add-btn{background:#28a745;color:#fff;border:none;padding:.5rem .8rem;border-radius:6px;cursor:pointer}
+    .post-table{width:100%;border-collapse:collapse}
+    .post-table th,.post-table td{border-bottom:1px solid #eee;padding:.55rem .6rem;text-align:left}
+    .post-table tbody tr:hover{background:#f9fcff}
+    .action-btn{margin-right:.25rem;padding:.35rem .6rem;border:none;border-radius:6px;cursor:pointer}
+    .edit-btn{background:#ffc107;color:#111}
+    .toggle-btn{background:#0d6efd;color:#fff}
+    .delete-btn{background:#dc3545;color:#fff}
+    .status-pill{padding:.2rem .5rem;border-radius:999px;font-size:.85rem}
+    .status-active{background:#e8f5e9;color:#2e7d32}
+    .status-inactive{background:#ffebee;color:#c62828}
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;z-index:9999}
+    .modal-overlay.active{display:flex}
+    .modal-content{width:min(640px,94vw);background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+    .modal-header{display:flex;justify-content:space-between;align-items:center;padding:.9rem 1rem;border-bottom:1px solid #eee;background:#f8f9fa}
+    .close-btn{background:none;border:none;font-size:1.4rem;cursor:pointer}
+    .form-row{display:flex;gap:.6rem}
+    .form-row .field{flex:1}
+    .field{margin:.6rem 1rem}
+    .field label{display:block;font-size:.9rem;color:#444;margin-bottom:.25rem}
+    .field input,.field select,.field textarea{width:100%;padding:.5rem .6rem;border:1px solid #d0d7de;border-radius:6px}
+    .image-preview img{max-height:110px;border:1px solid #eee;border-radius:8px}
+    .modal-buttons{display:flex;gap:.5rem;justify-content:flex-end;padding:1rem}
+    .cancel-btn{background:#6c757d;color:#fff}
+    .save-btn{background:#28a745;color:#fff}
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>YAĞMURLU KÖY DERNEĞİ YÖNETİM PANELİ</h2>
+    <a href="index.html"><i class="fas fa-home"></i>Ana Sayfa</a>
+    <a href="kullaniciKayit.html"><i class="fas fa-user-plus"></i>Kullanıcı Kayıt</a>
+    <a href="kullaniciBilgileri.html"><i class="fas fa-users"></i>Kullanıcı Bilgileri</a>
+    <a href="gelirGider.html"><i class="fas fa-money-bill-wave"></i>Gelir - Gider</a>
+    <a href="post.html" class="active"><i class="fas fa-newspaper"></i>Post Paylaşımı</a>
+    <a href="reklam.html"><i class="fas fa-ad"></i>Reklam</a>
+    <a href="poll_admin.html"><i class="fas fa-chart-pie"></i> Anketler</a>
+    <a href="galeri.html"><i class="fas fa-images"></i>Galeri</a>
+    <a href="oneriSikayet.html"><i class="fas fa-comment-alt"></i>Öneri & Şikayet</a>
+    <a href="isletme.html"><i class="fas fa-store"></i> İşletmeler</a>
+<a href="bildirim.html"><i class="fas fa-bell"></i> Bildirim Gönder</a>
+<a href="etkinlik.html"><i class="fas fa-calendar-check"></i> Etkinlikler</a>
+
+    <a href="about.html"><i class="fas fa-info-circle"></i>Hakkımızda</a>
+  </div>
+
+  <div class="main-content">
+    <div class="page-header">
+      <h3>Post Paylaşımı</h3>
+      <button class="add-btn" id="addPostBtn"><i class="fas fa-plus"></i> Yeni Post</button>
+    </div>
+
+    <div class="filters">
+      <input type="text" id="searchBox" placeholder="Ara: başlık / açıklama" />
+      <select id="statusFilter">
+        <option value="">Durum: Hepsi</option>
+        <option value="active">Aktif</option>
+        <option value="inactive">Pasif</option>
+      </select>
+      <button class="action-btn" id="btnReload"><i class="fa fa-rotate"></i> Yenile</button>
+    </div>
+
+    <table class="post-table" id="postTable">
+      <thead>
+        <tr>
+          <th>Başlık</th>
+          <th>Kitle</th>
+          <th>Durum</th>
+          <th>Yayın Zamanı</th>
+          <th>Fotoğraf</th>
+          <th>İşlemler</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- Modal: Ekle / Düzenle -->
+  <div class="modal-overlay" id="postModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 id="modalTitle">Yeni Post</h4>
+        <button class="close-btn" id="closeModalBtn" aria-label="Kapat">&times;</button>
+      </div>
+      <form id="postForm" enctype="multipart/form-data">
+        <input type="hidden" id="postId" />
+        <div class="field">
+          <label for="postAudience">Hedef Kitle</label>
+          <select id="postAudience" name="audience" required>
+            <option value="">Seçiniz…</option>
+            <option value="herkes">Herkese</option>
+            <option value="gold">Sadece Gold</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="postStatus">Durum</label>
+          <select id="postStatus" name="status">
+            <option value="active">Aktif</option>
+            <option value="inactive">Pasif</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="postTitle">Başlık</label>
+          <input type="text" id="postTitle" name="title" placeholder="Post başlığı…" required />
+        </div>
+        <div class="field">
+          <label for="postContent">Açıklama</label>
+          <textarea id="postContent" name="content" rows="3" placeholder="Post açıklaması…" required></textarea>
+        </div>
+        <div class="field">
+          <label for="postPublishAt">Yayın Zamanı (isteğe bağlı)</label>
+          <input type="datetime-local" id="postPublishAt" name="publish_at" />
+          <small>Boş bırakırsan hemen yayınlanır (ekler eklemez görünmez; kamu görünürlüğü <em>public_posts.php</em> tarafından yönetilir).</small>
+        </div>
+        <div class="field">
+          <label for="postImage">Fotoğraf</label>
+          <input type="file" id="postImage" name="image" accept="image/*" />
+          <div id="imagePreview" class="image-preview"></div>
+        </div>
+        <div class="modal-buttons">
+          <button type="button" class="cancel-btn" id="cancelModalBtn">İptal</button>
+          <button type="submit" class="save-btn" id="saveBtn">Kaydet</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Tam ekran görsel -->
+  <div class="modal-overlay" id="fullScreenImageModal">
+    <div class="modal-content image-modal-content" style="max-width:96vw">
+      <button class="close-btn" id="closeFullScreenImageBtn" aria-label="Kapat">&times;</button>
+      <img id="fullScreenImage" src="" alt="Görsel" style="width:100%;height:auto;display:block"/>
+    </div>
+  </div>
+
+  <script>
+  const API = 'https://erkayasoft.com/api/posts_api.php';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('addPostBtn').onclick = () => openModal();
+    document.getElementById('closeModalBtn').onclick = closeModal;
+    document.getElementById('cancelModalBtn').onclick = closeModal;
+    document.getElementById('btnReload').onclick = loadPosts;
+
+    document.getElementById('postForm').addEventListener('submit', onSubmit);
+    document.getElementById('postImage').addEventListener('change', previewImage);
+    document.getElementById('searchBox').addEventListener('input', loadPosts);
+    document.getElementById('statusFilter').addEventListener('change', loadPosts);
+
+    document.getElementById('closeFullScreenImageBtn').onclick = () => {
+      document.getElementById('fullScreenImageModal').classList.remove('active');
+      document.getElementById('fullScreenImage').src = '';
+    };
+
+    loadPosts();
+  });
+
+  function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));}
+
+  async function loadPosts(){
+    const q = encodeURIComponent(document.getElementById('searchBox').value.trim());
+    const status = encodeURIComponent(document.getElementById('statusFilter').value);
+    const url = `${API}?action=list${status?`&status=${status}`:''}${q?`&q=${q}`:''}`;
+
+    try{
+      const r = await fetch(url, { cache:'no-store' });
+      const j = await r.json();
+      if(!j.success) throw new Error(j.error||'hata');
+      renderPosts(j.data || []);
+    }catch(e){
+      console.error(e);
+      alert('Postlar yüklenemedi.');
+    }
+  }
+
+  function renderPosts(posts){
+    const tbody = document.querySelector('#postTable tbody');
+    tbody.innerHTML = '';
+
+    posts.forEach(post=>{
+      const tr = document.createElement('tr');
+      tr.dataset.id = post.id;
+
+      const statusPill = `<span class="status-pill ${post.status==='active'?'status-active':'status-inactive'}">${post.status==='active'?'Aktif':'Pasif'}</span>`;
+      const dt = post.publish_at ? new Date(post.publish_at+'Z').toLocaleString('tr-TR') : '-';
+
+      tr.innerHTML = `
+        <td>${escapeHtml(post.title)}</td>
+        <td>${post.audience==='gold'?'Gold':'Herkese'}</td>
+        <td>${statusPill}</td>
+        <td>${dt}</td>
+        <td>${post.imageUrl ? `<img src="${post.imageUrl}" alt="" style="max-width:80px;cursor:pointer" />` : 'Yok'}</td>
+        <td>
+          <button class="action-btn edit-btn"><i class="fas fa-pen"></i> Düzenle</button>
+          <button class="action-btn toggle-btn"><i class="fas fa-toggle-on"></i> ${post.status==='active'?'Pasif Yap':'Aktif Yap'}</button>
+          <button class="action-btn delete-btn"><i class="fas fa-trash-alt"></i> Sil</button>
+        </td>
+      `;
+
+      // Görsel tıklama → tam ekran
+      const img = tr.querySelector('img');
+      if (img) img.addEventListener('click', ()=>showFullImage(post.imageUrl));
+
+      // Edit
+      tr.querySelector('.edit-btn').addEventListener('click', ()=> openModal(post));
+
+      // Toggle
+      tr.querySelector('.toggle-btn').addEventListener('click', ()=> toggleStatus(post.id));
+
+      // Delete
+      tr.querySelector('.delete-btn').addEventListener('click', ()=> deletePost(post.id));
+
+      tbody.appendChild(tr);
+    });
+  }
+
+  function showFullImage(url){
+    const modal = document.getElementById('fullScreenImageModal');
+    document.getElementById('fullScreenImage').src = url;
+    modal.classList.add('active');
+  }
+
+  function openModal(post){
+    document.getElementById('postModal').classList.add('active');
+    const form = document.getElementById('postForm');
+    form.dataset.mode = post ? 'edit' : 'create';
+
+    document.getElementById('modalTitle').textContent = post ? 'Postu Düzenle' : 'Yeni Post';
+    document.getElementById('postId').value = post?.id ?? '';
+    document.getElementById('postAudience').value = post?.audience ?? '';
+    document.getElementById('postStatus').value   = post?.status ?? 'active';
+    document.getElementById('postTitle').value    = post?.title ?? '';
+    document.getElementById('postContent').value  = post?.content ?? '';
+
+    const inputDt = document.getElementById('postPublishAt');
+    if (post?.publish_at){
+      const dt = new Date(post.publish_at+'Z'); // UTC
+      inputDt.value = dt.toISOString().slice(0,16); // YYYY-MM-DDTHH:MM
+    } else {
+      inputDt.value = '';
+    }
+
+    document.getElementById('imagePreview').innerHTML = post?.imageUrl ? `<img src="${post.imageUrl}" alt="">` : '';
+    document.getElementById('postImage').value = '';
+  }
+
+  function closeModal(){
+    document.getElementById('postModal').classList.remove('active');
+    const form = document.getElementById('postForm');
+    form.reset();
+    form.dataset.mode = 'create';
+    document.getElementById('imagePreview').innerHTML = '';
+    document.getElementById('postId').value = '';
+  }
+
+  function previewImage(e){
+    const file = e.target.files[0];
+    const box = document.getElementById('imagePreview');
+    box.innerHTML = '';
+    if (file){
+      const url = URL.createObjectURL(file);
+      const img = document.createElement('img');
+      img.src = url;
+      box.appendChild(img);
+    }
+  }
+
+  async function onSubmit(e){
+    e.preventDefault();
+    const formEl = e.target;
+    const mode = formEl.dataset.mode || 'create';
+    const data = new FormData(formEl);
+    data.append('action', mode==='edit' ? 'update' : 'create');
+
+    // Güncellemede id zorunlu
+    if (mode==='edit'){
+      data.append('id', document.getElementById('postId').value);
+    }
+
+    try{
+      const r = await fetch(API, { method:'POST', body:data });
+      const j = await r.json();
+      if (!j.success) throw new Error(j.error||'Hata');
+      alert(mode==='edit' ? 'Post güncellendi' : 'Post eklendi');
+      closeModal();
+      loadPosts();
+    }catch(err){
+      console.error(err);
+      alert('Kaydedilemedi: '+ err.message);
+    }
+  }
+
+  async function toggleStatus(id){
+    const fd = new FormData();
+    fd.append('action','toggle');
+    fd.append('id', id);
+    try{
+      const r = await fetch(API, { method:'POST', body: fd });
+      const j = await r.json();
+      if (!j.success) throw new Error(j.error||'Hata');
+      loadPosts();
+    }catch(e){
+      alert('Durum değişmedi: '+e.message);
+    }
+  }
+
+  async function deletePost(id){
+    if (!confirm('Silmek istediğine emin misin?')) return;
+    const fd = new FormData();
+    fd.append('action','delete');
+    fd.append('id', id);
+    try{
+      const r = await fetch(API, { method:'POST', body: fd });
+      const j = await r.json();
+      if (!j.success) throw new Error(j.error||'Hata');
+      alert('Silindi.');
+      loadPosts();
+    }catch(e){
+      alert('Silinemedi: '+e.message);
+    }
+  }
+  </script>
+</body>
+</html>
