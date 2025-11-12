@@ -93,7 +93,7 @@ class EventItem {
 }
 
 class EventsApi {
-  static const String _base = 'https://erkayasoft.com/api';
+  static const String _base = 'https://yagmurlukoyu.org/api';
 
   static Future<List<EventCategory>> fetchCategories({
     bool includeInactive = false,

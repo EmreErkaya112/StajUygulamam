@@ -12,7 +12,7 @@ class GalleryPage extends StatefulWidget {
 }
 
 class _GalleryPageState extends State<GalleryPage> {
-  static const _apiEndpoint = 'https://erkayasoft.com/api/list_images.php';
+  static const _apiEndpoint = 'https://yagmurlukoyu.org/api/list_images.php';
   List<String> _images = [];
   bool _loading = true;
   String? _error;

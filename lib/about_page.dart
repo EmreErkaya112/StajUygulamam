@@ -10,7 +10,7 @@ class AboutPage extends StatelessWidget {
   const AboutPage({Key? key}) : super(key: key);
 
   Future<Map<String, String>> fetchAbout() async {
-    final uri = Uri.parse('https://erkayasoft.com/api/get_about.php');
+    final uri = Uri.parse('https://yagmurlukoyu.org/api/get_about.php');
     final response = await http.get(uri);
     if (response.statusCode == 200) {
       final body = json.decode(response.body);

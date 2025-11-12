@@ -50,7 +50,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
     });
 
     final res = await http.get(
-      Uri.parse('https://erkayasoft.com/api/get_comments.php?postId=${p.id}'),
+      Uri.parse('https://yagmurlukoyu.org/api/get_comments.php?postId=${p.id}'),
     );
     if (res.statusCode == 200) {
       final b = json.decode(res.body);
@@ -114,7 +114,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
     // 1) İsteği sunucuya gönder
     final uid = (await SharedPreferences.getInstance()).getInt('userId') ?? 0;
     final res = await http.post(
-      Uri.parse('https://erkayasoft.com/api/react.php'),
+      Uri.parse('https://yagmurlukoyu.org/api/react.php'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode({
         'userId': uid,
@@ -154,7 +154,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
 
     final uid = (await SharedPreferences.getInstance()).getInt('userId');
     final res = await http.post(
-      Uri.parse('https://erkayasoft.com/api/add_comment.php'),
+      Uri.parse('https://yagmurlukoyu.org/api/add_comment.php'),
       headers: {'Content-Type':'application/json'},
       body: json.encode({
         'postId': p.id,

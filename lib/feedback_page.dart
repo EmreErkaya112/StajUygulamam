@@ -33,7 +33,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
 
     try {
       final res = await http.post(
-        Uri.parse('https://erkayasoft.com/api/add_feedback.php'),
+        Uri.parse('https://yagmurlukoyu.org/api/add_feedback.php'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'userId'     : uid,

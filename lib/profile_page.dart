@@ -32,7 +32,7 @@ class _ProfilePageState extends State<ProfilePage> {
     }
 
     final res = await http.get(
-      Uri.parse('https://erkayasoft.com/api/get_user.php?id=$id'),
+      Uri.parse('https://yagmurlukoyu.org/api/get_user.php?id=$id'),
     );
     if (res.statusCode == 200) {
       final jsonBody = json.decode(res.body);

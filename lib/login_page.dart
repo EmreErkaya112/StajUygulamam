@@ -27,7 +27,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<List<Map<String, dynamic>>> _fetchUsers() async {
-    final res = await http.get(Uri.parse('https://erkayasoft.com/api/kisiler.php'));
+    final res = await http.get(Uri.parse('https://yagmurlukoyu.org/api/kisiler.php'));
     if (res.statusCode == 200) {
       final body = json.decode(res.body);
       if (body['success'] == true) {

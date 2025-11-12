@@ -75,7 +75,7 @@ class _PollsPageState extends State<PollsPage> {
   List<Poll> _polls = [];
   final ScrollController _scrollController = ScrollController();
 
-  static const String _base = 'https://erkayasoft.com/api';
+  static const String _base = 'https://yagmurlukoyu.org/api';
 
   @override
   void initState() {

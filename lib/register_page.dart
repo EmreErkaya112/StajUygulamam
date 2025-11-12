@@ -47,7 +47,7 @@ class _RegisterPageState extends State<RegisterPage> {
     late http.Response response;
     try {
       response = await http.post(
-        Uri.parse('https://erkayasoft.com/api/add.php'),
+        Uri.parse('https://yagmurlukoyu.org/api/add.php'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode(payload),
       );

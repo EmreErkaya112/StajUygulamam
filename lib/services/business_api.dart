@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// ------------------------------------------------------------
 /// API base
 /// ------------------------------------------------------------
-const String _baseUrl = 'https://erkayasoft.com/api';
+const String _baseUrl = 'https://yagmurlukoyu.org/api';
 
 /// Http helpers (timeout'lu)
 Future<http.Response> _safeGet(Uri uri) =>

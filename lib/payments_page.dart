@@ -104,7 +104,7 @@ class _PaymentsPageState extends State<PaymentsPage> {
 
       final url = Uri.parse(
         // API’nin adı sende böyleydi; veri şekli Payment.fromJson ile uyumlu olmalı
-        'https://erkayasoft.com/api/get_payment_history.php?user_id=$uid',
+        'https://yagmurlukoyu.org/api/get_payment_history.php?user_id=$uid',
       );
       final res = await http.get(url);
       if (res.statusCode != 200) {

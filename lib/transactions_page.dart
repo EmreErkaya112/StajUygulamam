@@ -79,7 +79,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
     setState(() => _loading = true);
     try {
       final res = await http.get(
-        Uri.parse('https://erkayasoft.com/api/get_transactions.php'),
+        Uri.parse('https://yagmurlukoyu.org/api/get_transactions.php'),
       );
       if (res.statusCode != 200) throw 'Sunucu hatası ${res.statusCode}';
       final body = json.decode(res.body) as Map<String, dynamic>;
