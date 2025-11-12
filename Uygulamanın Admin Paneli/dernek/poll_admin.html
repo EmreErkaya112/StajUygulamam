@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Anket Yönetim Paneli</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="css/oneriSikayet.css" />
+  <style>
+    *{box-sizing:border-box} body{display:flex;font-family:Arial,Helvetica,sans-serif;background:#f5f7fb}
+    .main-content{flex:1;padding:1rem 1.2rem}
+    .page-header{display:flex;justify-content:space-between;align-items:center;margin:.5rem 0 1rem}
+    .page-header h1{font-size:1.4rem;color:#223}
+    .btn{border:none;border-radius:8px;padding:.5rem .8rem;cursor:pointer}
+    .btn.primary{background:#0d6efd;color:#fff}
+    .btn.success{background:#28a745;color:#fff}
+    .btn.danger{background:#dc3545;color:#fff}
+    .btn.warn{background:#ffc107;color:#111}
+    .btn.ghost{background:#e9ecef;color:#333}
+    .filters{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.8rem}
+    .filters input,.filters select{padding:.45rem .6rem;border:1px solid #d0d7de;border-radius:8px;background:#fff}
+    table{width:100%;border-collapse:collapse;background:#fff;border:1px solid #e8eaef;border-radius:10px;overflow:hidden}
+    th,td{padding:.6rem .7rem;border-bottom:1px solid #eef1f6;text-align:left;font-size:.95rem}
+    thead th{background:#f2f5fa;font-weight:600;color:#334}
+    tbody tr:hover{background:#f8fbff}
+    .pill{padding:.15rem .5rem;border-radius:999px;font-size:.8rem;display:inline-block}
+    .pill.green{background:#e8f5e9;color:#2e7d32}
+    .pill.red{background:#ffebee;color:#c62828}
+    .progress{height:10px;background:#eef2f7;border-radius:999px;overflow:hidden}
+    .bar{height:100%;background:#0d6efd}
+    .muted{color:#667}
+    .opt-row{display:grid;grid-template-columns: 1fr 100px 60px;gap:.6rem;align-items:center;margin:.4rem 0}
+    .opt-row .label{font-weight:500}
+    .opt-row .pct{text-align:right}
+    .opt-row small{color:#667}
+    .row-actions .btn{margin-right:.25rem}
+    .details{background:#fbfdff}
+    .empty{padding:1rem;text-align:center;color:#456}
+    /* Modal */
+    .modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:1000}
+    .modal.show{display:flex}
+    .modal .box{width:min(560px,95vw);background:#fff;border-radius:12px;box-shadow:0 24px 80px rgba(0,0,0,.25);overflow:hidden}
+    .box header{display:flex;justify-content:space-between;align-items:center;padding:.9rem 1rem;background:#f7f7f9;border-bottom:1px solid #eee}
+    .box .body{padding:1rem}
+    .box .actions{padding:.9rem 1rem;border-top:1px solid #eee;display:flex;justify-content:flex-end;gap:.5rem;background:#fafafa}
+    .field{margin-bottom:.7rem}
+    .field label{display:block;font-size:.9rem;color:#445;margin-bottom:.25rem}
+    .field input,.field textarea{width:100%;padding:.5rem .6rem;border:1px solid #d0d7de;border-radius:8px}
+    .opts .opt{display:flex;gap:.5rem;margin-bottom:.4rem}
+    .opts .opt input{flex:1}
+    .opts .opt .del{padding:.4rem .6rem}
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>YAĞMURLU KÖY DERNEĞİ</h2>
+    <a href="index.html"><i class="fas fa-home"></i> Ana Sayfa</a>
+    <a href="kullaniciKayit.html"><i class="fas fa-user-plus"></i> Kullanıcı Kayıt</a>
+    <a href="kullaniciBilgileri.html"><i class="fas fa-users"></i> Kullanıcı Bilgileri</a>
+    <a href="gelirGider.html"><i class="fas fa-money-bill-wave"></i> Gelir – Gider</a>
+    <a href="post.html"><i class="fas fa-newspaper"></i> Post Paylaşımı</a>
+    <a href="reklam.html"><i class="fas fa-ad"></i> Reklam</a>
+    <a href="poll_admin.html" class="active"><i class="fas fa-chart-pie"></i> Anketler</a>
+    <a href="galeri.html"><i class="fas fa-images"></i> Galeri</a>
+    <a href="oneriSikayet.html"><i class="fas fa-comment-alt"></i> Öneri & Şikayet</a>
+    <a href="isletme.html"><i class="fas fa-store"></i> İşletmeler</a>
+<a href="bildirim.html"><i class="fas fa-bell"></i> Bildirim Gönder</a>
+<a href="etkinlik.html"><i class="fas fa-calendar-check"></i> Etkinlikler</a>
+
+    <a href="about.html"><i class="fas fa-info-circle"></i> Hakkımızda</a>
+  </div>
+
+  <div class="main-content">
+    <div class="page-header">
+      <h1>Anket Yönetimi</h1>
+      <div>
+        <button class="btn primary" id="btnReload"><i class="fa fa-rotate"></i> Yenile</button>
+        <button class="btn success" id="btnAdd"><i class="fa fa-plus"></i> Yeni Anket</button>
+      </div>
+    </div>
+
+    <div class="filters">
+      <select id="statusFilter">
+        <option value="all">Durum: Hepsi</option>
+        <option value="active">Aktif</option>
+        <option value="inactive">Pasif</option>
+      </select>
+      <select id="pageSize">
+        <option value="10">10 kayıt</option>
+        <option value="25" selected>25 kayıt</option>
+        <option value="50">50 kayıt</option>
+      </select>
+    </div>
+
+    <table id="tbl">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Başlık</th>
+          <th class="muted">Açıklama</th>
+          <th>Durum</th>
+          <th>Toplam Oy</th>
+          <th>Oluşturulma</th>
+          <th>İşlemler</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <div id="empty" class="empty" style="display:none">Kayıt bulunamadı.</div>
+  </div>
+
+  <!-- Modal: Yeni Anket -->
+  <div class="modal" id="modal">
+    <div class="box">
+      <header>
+        <h3>Yeni Anket</h3>
+        <button class="btn ghost" id="xClose">&times;</button>
+      </header>
+      <div class="body">
+        <div class="field">
+          <label>Başlık*</label>
+          <input id="mTitle" type="text" placeholder="Örn: Köy şenliği hangi tarihte olsun?" />
+        </div>
+        <div class="field">
+          <label>Açıklama*</label>
+          <textarea id="mDesc" rows="3" placeholder="Kısa açıklama…"></textarea>
+        </div>
+        <div class="field">
+          <label>Seçenekler* (en az 2)</label>
+          <div class="opts" id="mOpts"></div>
+          <button class="btn ghost" id="btnAddOpt"><i class="fa fa-plus"></i> Seçenek ekle</button>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn ghost" id="btnCancel">İptal</button>
+        <button class="btn success" id="btnSave">Kaydet</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API = 'https://erkayasoft.com/api/polls_api.php';
+    const $ = s => document.querySelector(s);
+
+    let page = 1;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      $('#btnReload').onclick = () => { page=1; load(); };
+      $('#btnAdd').onclick = openModal;
+      $('#statusFilter').onchange = () => { page=1; load(); };
+      $('#pageSize').onchange = () => { page=1; load(); };
+
+      $('#xClose').onclick = closeModal;
+      $('#btnCancel').onclick = closeModal;
+      $('#btnSave').onclick = savePoll;
+      $('#btnAddOpt').onclick = addOptInput;
+
+      // Başlangıçta iki seçenek alanı
+      addOptInput(); addOptInput();
+
+      load();
+    });
+
+    function addOptInput(val=''){
+      const wrap = $('#mOpts');
+      const row = document.createElement('div');
+      row.className = 'opt';
+      row.innerHTML = `
+        <input type="text" placeholder="Seçenek..." value="${val.replaceAll('"','&quot;')}"/>
+        <button type="button" class="btn danger del"><i class="fa fa-trash"></i></button>
+      `;
+      row.querySelector('.del').onclick = () => row.remove();
+      wrap.appendChild(row);
+    }
+
+    function openModal(){
+      $('#mTitle').value=''; $('#mDesc').value='';
+      $('#mOpts').innerHTML=''; addOptInput(); addOptInput();
+      $('#modal').classList.add('show');
+    }
+    function closeModal(){ $('#modal').classList.remove('show'); }
+
+    async function savePoll(){
+      const title = $('#mTitle').value.trim();
+      const description = $('#mDesc').value.trim();
+      const options = Array.from(document.querySelectorAll('#mOpts input')).map(i=>i.value.trim()).filter(v=>v);
+      if(!title || !description || options.length<2) return alert('Başlık, açıklama ve en az 2 seçenek zorunlu.');
+      try{
+        const r = await fetch(API+'?action=create', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ title, description, options })
+        });
+        const j = await r.json();
+        if(!j.success) throw j.error || 'Hata';
+        closeModal(); page=1; load();
+      }catch(e){ alert('Kaydedilemedi: '+e); }
+    }
+
+    async function load(){
+      const status = $('#statusFilter').value;
+      const pageSize = +$('#pageSize').value;
+      const url = `${API}?action=list&status=${encodeURIComponent(status)}&page=${page}&pageSize=${pageSize}`;
+
+      try{
+        const r = await fetch(url, {cache:'no-store'});
+        const j = await r.json();
+        if(!j.success) throw j.error || 'Hata';
+
+        const tbody = $('#tbl tbody'); tbody.innerHTML='';
+        const data = j.data || [];
+        $('#empty').style.display = data.length? 'none':'block';
+
+        data.forEach(p=>{
+          const tr = document.createElement('tr');
+          const badge = p.is_active ? `<span class="pill green">Aktif</span>` : `<span class="pill red">Pasif</span>`;
+          tr.innerHTML = `
+            <td>${p.id}</td>
+            <td>${escapeHtml(p.title)}</td>
+            <td class="muted">${escapeHtml(p.description)}</td>
+            <td>${badge}</td>
+            <td>${p.totals.total_votes}</td>
+            <td>${p.created_at || '-'}</td>
+            <td class="row-actions">
+              <button class="btn ghost btn-details"><i class="fa fa-chart-bar"></i> Sonuçlar</button>
+              ${p.is_active
+                ? `<button class="btn warn btn-close"><i class="fa fa-stop"></i> Sonlandır</button>`
+                : `<button class="btn success btn-open"><i class="fa fa-play"></i> Yayına Al</button>`
+              }
+              <button class="btn danger btn-del"><i class="fa fa-trash"></i> Sil</button>
+            </td>
+          `;
+          // detay satırı
+          const tr2 = document.createElement('tr');
+          tr2.className = 'details';
+          const optHtml = p.options.map(o=>{
+            const pct = Number(o.percent || 0);
+            const w = Math.max(0, Math.min(100, pct));
+            return `
+              <div class="opt-row">
+                <div class="label">${escapeHtml(o.label)}</div>
+                <div class="progress"><div class="bar" style="width:${w}%"></div></div>
+                <div class="pct"><small>${o.vote_count} oy • ${pct}%</small></div>
+              </div>
+            `;
+          }).join('');
+          tr2.innerHTML = `<td colspan="7"><div style="padding:.6rem 1rem">${optHtml || '<em>Seçenek yok</em>'}</div></td>`;
+          tr2.style.display = 'none';
+
+          tbody.appendChild(tr);
+          tbody.appendChild(tr2);
+
+          tr.querySelector('.btn-details').onclick = ()=> {
+            tr2.style.display = (tr2.style.display==='none') ? 'table-row' : 'none';
+          };
+          const del = tr.querySelector('.btn-del');
+          del.onclick = ()=> doDelete(p.id);
+
+          const btnClose = tr.querySelector('.btn-close');
+          if (btnClose) btnClose.onclick = ()=> setStatus(p.id, 0);
+
+          const btnOpen = tr.querySelector('.btn-open');
+          if (btnOpen) btnOpen.onclick = ()=> setStatus(p.id, 1);
+        });
+
+        // sayfalama (basit): nextPage var ise “Yükle” butonu
+        if (j.nextPage){
+          const trMore = document.createElement('tr');
+          const td = document.createElement('td'); td.colSpan=7; td.style.textAlign='center';
+          const btnMore = document.createElement('button');
+          btnMore.className='btn primary'; btnMore.textContent='Daha Fazla Yükle';
+          btnMore.onclick = ()=> { page = j.nextPage; appendMore(status, pageSize); };
+          td.appendChild(btnMore); trMore.appendChild(td);
+          $('#tbl tbody').appendChild(trMore);
+        }
+
+      }catch(e){ alert('Yüklenemedi: '+e); }
+    }
+
+    async function appendMore(status, pageSize){
+      const url = `${API}?action=list&status=${encodeURIComponent(status)}&page=${page}&pageSize=${pageSize}`;
+      try{
+        const r = await fetch(url, {cache:'no-store'}); const j=await r.json();
+        if(!j.success) throw j.error||'Hata';
+        const tbody = $('#tbl tbody');
+        // son "Daha Fazla" satırını kaldır
+        const last = tbody.lastElementChild;
+        if (last) tbody.removeChild(last);
+
+        (j.data||[]).forEach(p=>{
+          const tr = document.createElement('tr');
+          const badge = p.is_active ? `<span class="pill green">Aktif</span>` : `<span class="pill red">Pasif</span>`;
+          tr.innerHTML = `
+            <td>${p.id}</td>
+            <td>${escapeHtml(p.title)}</td>
+            <td class="muted">${escapeHtml(p.description)}</td>
+            <td>${badge}</td>
+            <td>${p.totals.total_votes}</td>
+            <td>${p.created_at || '-'}</td>
+            <td class="row-actions">
+              <button class="btn ghost btn-details"><i class="fa fa-chart-bar"></i> Sonuçlar</button>
+              ${p.is_active
+                ? `<button class="btn warn btn-close"><i class="fa fa-stop"></i> Sonlandır</button>`
+                : `<button class="btn success btn-open"><i class="fa fa-play"></i> Yayına Al</button>`
+              }
+              <button class="btn danger btn-del"><i class="fa fa-trash"></i> Sil</button>
+            </td>
+          `;
+          const tr2 = document.createElement('tr');
+          tr2.className = 'details';
+          const optHtml = p.options.map(o=>{
+            const pct = Number(o.percent || 0);
+            const w = Math.max(0, Math.min(100, pct));
+            return `
+              <div class="opt-row">
+                <div class="label">${escapeHtml(o.label)}</div>
+                <div class="progress"><div class="bar" style="width:${w}%"></div></div>
+                <div class="pct"><small>${o.vote_count} oy • ${pct}%</small></div>
+              </div>
+            `;
+          }).join('');
+          tr2.innerHTML = `<td colspan="7"><div style="padding:.6rem 1rem">${optHtml || '<em>Seçenek yok</em>'}</div></td>`;
+          tr2.style.display = 'none';
+
+          tbody.appendChild(tr);
+          tbody.appendChild(tr2);
+
+          tr.querySelector('.btn-details').onclick = ()=> {
+            tr2.style.display = (tr2.style.display==='none') ? 'table-row' : 'none';
+          };
+          tr.querySelector('.btn-del').onclick = ()=> doDelete(p.id);
+          const btnClose = tr.querySelector('.btn-close'); if (btnClose) btnClose.onclick = ()=> setStatus(p.id, 0);
+          const btnOpen  = tr.querySelector('.btn-open');  if (btnOpen)  btnOpen.onclick  = ()=> setStatus(p.id, 1);
+        });
+
+        if (j.nextPage){
+          const trMore = document.createElement('tr');
+          const td = document.createElement('td'); td.colSpan=7; td.style.textAlign='center';
+          const btnMore = document.createElement('button');
+          btnMore.className='btn primary'; btnMore.textContent='Daha Fazla Yükle';
+          btnMore.onclick = ()=> { page = j.nextPage; appendMore(status, pageSize); };
+          td.appendChild(btnMore); trMore.appendChild(td);
+          $('#tbl tbody').appendChild(trMore);
+        }
+      }catch(e){ alert('Yüklenemedi: '+e); }
+    }
+
+    async function setStatus(id, active){
+      if (active===0 && !confirm('Bu anketi sonlandırmak istiyor musunuz?')) return;
+      try{
+        const r = await fetch(API+'?action=set_status', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ id, is_active: active })
+        });
+        const j = await r.json();
+        if(!j.success) throw j.error || 'Hata';
+        load();
+      }catch(e){ alert('Durum güncellenemedi: '+e); }
+    }
+
+    async function doDelete(id){
+      if(!confirm('Bu anketi kalıcı olarak silmek istiyor musunuz?')) return;
+      try{
+        const r = await fetch(API+'?action=delete', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ id })
+        });
+        const j = await r.json();
+        if(!j.success) throw j.error || 'Hata';
+        load();
+      }catch(e){ alert('Silinemedi: '+e); }
+    }
+
+    function escapeHtml(s){return String(s??'').replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));}
+  </script>
+</body>
+</html>

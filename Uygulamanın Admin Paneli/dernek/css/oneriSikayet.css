@@ -1,0 +1,321 @@
+/* Genel Değişkenler (Sizdeki :root kısmı) */
+:root {
+  --primary-color: #4361ee;
+  --secondary-color: #3a0ca3;
+  --dark-color: #2b2d42;
+  --light-color: #f8f9fa;
+  --success-color: #2ecc71;
+  --danger-color: #e74c3c;
+  --warning-color: #f8961e;
+  --border-radius: 8px;
+  --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Genel Sıfırlama ve Font Ayarları */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Poppins", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  font-family: "Poppins", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  display: flex;
+  min-height: 100vh;
+  background-color: #f5f7fa;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* Sidebar Stilleri (Mevcut kodunuzdan aynen alındı) */
+.sidebar {
+  width: 280px;
+  background: linear-gradient(135deg, #2b2d42, #3a0ca3);
+  color: white;
+  padding: 25px 20px;
+  box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 1;
+}
+
+.sidebar h2 {
+  margin-bottom: 30px;
+  font-size: 20px;
+  text-align: center;
+  padding: 15px 10px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: var(--border-radius);
+  line-height: 1.4;
+  border-left: 4px solid var(--primary-color);
+}
+
+.sidebar a {
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  color: white;
+  text-decoration: none;
+  margin: 8px 0;
+  border-radius: var(--border-radius);
+  transition: all 0.3s ease;
+  font-size: 15px;
+}
+
+.sidebar a:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  transform: translateX(5px);
+}
+
+.sidebar a i {
+  margin-right: 12px;
+  width: 20px;
+  text-align: center;
+}
+.sidebar a.active {
+  background-color: var(--primary-color);
+  color: white;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Ana İçerik Alanı */
+.main-content {
+  flex: 1; /* Geri kalan tüm alanı kapla */
+  padding: 40px;
+  overflow-y: auto; /* İçerik taşarsa kaydırma çubuğu çıkar */
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.page-header h3 {
+  font-size: 24px;
+  color: var(--dark-color);
+  position: relative;
+  padding-bottom: 10px;
+  margin: 0;
+}
+
+.page-header h3::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 60px;
+  height: 3px;
+  background-color: var(--primary-color);
+}
+
+/* Tablo Konteyneri */
+.table-container {
+  background-color: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  overflow-x: auto; /* Küçük ekranlarda yatay kaydırma çubuğu için */
+}
+
+/* Veri Tablosu Stilleri */
+.data-table {
+  width: 100%; /* Tablonun konteynerini tamamen kaplamasını sağla */
+  border-collapse: collapse; /* Kenarlıkların birleşmesini sağla */
+  margin: 0; /* İç boşlukları sıfırla */
+  padding: 0;
+}
+
+.data-table thead {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.data-table th {
+  padding: 15px 20px;
+  text-align: left;
+  font-size: 16px;
+  font-weight: 600;
+  white-space: nowrap; /* Başlıkların tek satırda kalmasını sağla */
+}
+
+.data-table tbody tr {
+  border-bottom: 1px solid #eee; /* Satırlar arasına ince çizgi */
+  transition: background-color 0.2s ease;
+}
+
+.data-table tbody tr:last-child {
+  border-bottom: none; /* Son satırın altında çizgi olmasın */
+}
+
+.data-table tbody tr:nth-child(even) {
+  background-color: #f9f9f9; /* Tek ve çift satırlar için farklı arka plan */
+}
+
+.data-table tbody tr:hover {
+  background-color: #f0f2f5; /* Üzerine gelindiğinde arka plan rengi */
+}
+
+.data-table td {
+  padding: 15px 20px;
+  font-size: 15px;
+  color: #555;
+  vertical-align: middle; /* İçeriği dikeyde ortala */
+}
+
+/* Durum sütunu için özel stil */
+.status-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-badge.unread {
+  background-color: var(--warning-color);
+  color: white;
+}
+
+.status-badge.read {
+  background-color: #ccc;
+  color: #666;
+}
+
+/* İşlemler Sütunu Butonları */
+.action-buttons {
+  display: flex;
+  gap: 8px; /* Butonlar arası boşluk */
+  white-space: nowrap; /* Butonların tek satırda kalmasını sağla */
+}
+
+.action-btn {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.action-btn i {
+  margin-right: 0; /* Buton içindeki ikon ile metin arasını düzenle */
+}
+
+.action-btn.delete {
+  background-color: var(--danger-color);
+  color: white;
+}
+
+.action-btn.delete:hover {
+  background-color: #c0392b;
+  transform: translateY(-1px);
+}
+
+.action-btn.mark-read {
+  background-color: var(--success-color);
+  color: white;
+}
+
+.action-btn.mark-read:hover {
+  background-color: #27ae60;
+  transform: translateY(-1px);
+}
+
+.action-btn.mark-read:disabled {
+  background-color: #95a5a6; /* Okunmuş butonu pasif hale getir */
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.action-btn.mark-read:disabled:hover {
+  background-color: #95a5a6; /* Pasifken hover etkisi olmasın */
+  transform: none;
+}
+/* oneriSikayet.css */
+
+/* Genel tablo kabı */
+.table-container {
+  max-width: 1000px;
+  margin: 2rem auto;
+  overflow-x: auto;
+  padding: 0 1rem;
+}
+
+/* Temel tablo stili */
+.data-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Başlık satırı */
+.data-table thead th {
+  background-color: #2A6592;
+  color: #ffffff;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  padding: 12px 16px;
+  border-bottom: 2px solid #1F4E7A;
+}
+
+/* Veri hücreleri */
+.data-table tbody td {
+  padding: 12px 16px;
+  font-size: 14px;
+  color: #333333;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+/* Zebra-striping: tek tek satırlarda hafif arkaplan */
+.data-table tbody tr:nth-child(odd) {
+  background-color: #F9FCFF;
+}
+
+/* Fare üzerine gelince */
+.data-table tbody tr:hover {
+  background-color: #E6F2FB;
+}
+
+/* Boş mesaj */
+#noDataMessage {
+  font-size: 16px;
+  color: #777777;
+  margin-top: 1.5rem;
+}
+
+/* Sidebar link aktif durumu */
+.sidebar a.active {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  padding-left: 8px;
+}
+
+/* Durum etiketi (istek / şikayet) */
+.status-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+.status-badge.istek {
+  background-color: #4CAF50;
+  color: #ffffff;
+}
+.status-badge.sikayet {
+  background-color: #F44336;
+  color: #ffffff;
+}

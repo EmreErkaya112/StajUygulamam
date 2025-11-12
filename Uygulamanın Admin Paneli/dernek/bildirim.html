@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Bildirim Gönder — Kullanıcı Seçimi</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+     <link rel="stylesheet" href="css/oneriSikayet.css" />
+  <style>
+    :root{
+      --bg:#f5f7fb; --card:#fff; --muted:#667085; --line:#e8edf5;
+      --primary:#0d6efd; --success:#28a745; --warn:#ffc107; --danger:#dc3545;
+      --ink:#1f2937;
+    }
+    *{box-sizing:border-box} html,body{height:100%}
+    body{margin:0; font-family:Inter,Arial,Helvetica,sans-serif; background:var(--bg); color:var(--ink); display:flex}
+   
+    .main{flex:1; padding:18px; overflow:auto}
+    .page-header{display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:12px}
+    h1{font-size:20px; margin:0}
+    .btn{border:none; border-radius:9px; padding:8px 12px; cursor:pointer; font-weight:600}
+    .btn.primary{background:var(--primary); color:#fff}
+    .btn.success{background:var(--success); color:#fff}
+    .btn.ghost{background:#eef3fb; color:#0b2850}
+    .btn.danger{background:var(--danger); color:#fff}
+    .btn:disabled{opacity:.6; cursor:not-allowed}
+
+    .card{background:var(--card); border:1px solid var(--line); border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,.04)}
+    .section{padding:14px 16px; margin-bottom:12px}
+    .section header{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px}
+    .section h3{font-size:16px; margin:0}
+    .muted{color:var(--muted)}
+    .tag{background:#eef3fb; border:1px solid var(--line); padding:6px 8px; border-radius:8px; font-size:12px}
+
+    .grid{display:grid; gap:10px}
+    .grid.cols-2{grid-template-columns:1fr 1fr}
+    .field label{display:block; font-size:13px; color:#475569; margin-bottom:6px}
+    .field input,.field textarea,.field select{
+      width:100%; padding:9px 10px; border:1px solid var(--line); border-radius:8px; background:#fff; font:inherit
+    }
+
+    .toolbar{display:flex; gap:8px; flex-wrap:wrap}
+    .table{width:100%; border-collapse:collapse}
+    .table th,.table td{padding:10px 12px; border-bottom:1px solid var(--line); text-align:left}
+    .table thead th{background:#f1f5fb; font-size:13px}
+    .table tbody tr:hover{background:#f8fbff}
+    .kbd{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,"Liberation Mono","Courier New",monospace; background:#eef1f6; border:1px solid var(--line); padding:2px 6px; border-radius:6px}
+    .pill{padding:2px 8px; border-radius:999px; font-size:12px; display:inline-block}
+    .pill.green{background:#e8f5e9;color:#2e7d32}
+    .pill.red{background:#ffebee;color:#c62828}
+    .footer{padding:8px 16px; color:var(--muted)}
+    .results{max-height:220px; overflow:auto; background:#0b1020; color:#d3e6ff; border-radius:8px; padding:10px; font:12px ui-monospace,monospace}
+
+    .empty{padding:1rem;text-align:center;color:#456}
+  </style>
+</head>
+<body>
+   <div class="sidebar">
+      <h2>YAĞMURLU KÖY DERNEĞİ YÖNETİM PANELİ</h2>
+      <a href="index.html">
+        <i class="fas fa-home"></i>Ana Sayfa
+      </a>
+      <a href="kullaniciKayit.html">
+        <i class="fas fa-user-plus"></i>Kullanıcı Kayıt
+      </a>
+      <a href="kullaniciBilgileri.html">
+        <i class="fas fa-users"></i>Kullanıcı Bilgileri
+      </a>
+      <a href="gelirGider.html">
+        <i class="fas fa-money-bill-wave"></i>Gelir - Gider
+      </a>
+      <a href="post.html">
+        <i class="fas fa-newspaper"></i>Post Paylaşımı
+      </a>
+      <a href="reklam.html">
+        <i class="fas fa-ad"></i>Reklam
+      </a>
+      <a href="poll_admin.html"><i class="fas fa-chart-pie"></i> Anketler</a>
+      <a href="galeri.html">
+        <i class="fas fa-images"></i>Galeri
+      </a>
+      <a href="oneriSikayet.html" >
+        <i class="fas fa-comment-alt"></i>Öneri & Şikayet
+      </a>
+          <a href="isletme.html" ><i class="fas fa-store"></i> İşletmeler</a>
+<a href="bildirim.html"class="active"><i class="fas fa-bell"></i> Bildirim Gönder</a>
+<a href="etkinlik.html" ><i class="fas fa-calendar-check"></i> Etkinlikler</a>
+
+       <a href="about.html" >
+        <i class="fas fa-comment-alt"></i>Hakkımızda
+      </a>
+    </div>
+
+
+  <div class="main">
+    <div class="page-header">
+      <h1><i class="fa fa-bell"></i> Bildirim Gönder</h1>
+      <div class="toolbar">
+        <button class="btn ghost" id="btnReload"><i class="fa fa-rotate"></i> Yenile</button>
+        <button class="btn primary" id="btnSend"><i class="fa fa-paper-plane"></i> Gönder</button>
+      </div>
+    </div>
+
+    <!-- BAĞLANTI -->
+    <div class="section card">
+      <header>
+        <h3>Bağlantı Ayarları</h3>
+        <span class="muted">Push istekleri form-url-encoded gönderilir (preflight yok).</span>
+      </header>
+      <div class="grid cols-2">
+        <div class="field">
+          <label>Push API (push_user.php) URL</label>
+          <input id="cfgPushUrl" value="https://erkayasoft.com/api/push_user.php" />
+        </div>
+        <div class="field">
+          <label>Kişiler API URL</label>
+          <input id="cfgUsersUrl" value="https://erkayasoft.com/api/kisiler.php" />
+        </div>
+        <div class="field">
+          <label>Admin Token</label>
+          <input id="cfgToken" placeholder="push_user.php içindeki ADMIN_TOKEN" />
+        </div>
+        <div class="field">
+          <label>Alternatif: ID Listesi (virgülle)</label>
+          <input id="manualIds" placeholder="17,16,15" />
+        </div>
+      </div>
+    </div>
+
+    <!-- KULLANICILAR -->
+    <div class="section card">
+      <header>
+        <h3>Kullanıcılar</h3>
+        <div class="toolbar">
+          <input id="search" placeholder="Ara: ad, e-posta, ID…" />
+          <select id="statusFilter" title="status alanı">
+            <option value="all">Durum (status): Hepsi</option>
+            <option value="standart">standart</option>
+            <option value="pasif">pasif</option>
+          </select>
+          <select id="activeFilter" title="isActive alanı">
+            <option value="all">Hesap: Hepsi</option>
+            <option value="1">Aktif (isActive=1)</option>
+            <option value="0">Pasif (isActive=0)</option>
+          </select>
+          <button class="btn ghost" id="btnSelectAll"><i class="fa fa-check-double"></i> Filtrelenenlerin Tümünü Seç</button>
+          <button class="btn ghost" id="btnClearSel"><i class="fa fa-xmark"></i> Seçimi Temizle</button>
+        </div>
+      </header>
+
+      <table class="table" id="tbl">
+        <thead>
+          <tr>
+            <th><input type="checkbox" id="checkAll"/></th>
+            <th>ID</th>
+            <th>Ad Soyad</th>
+            <th>E-posta</th>
+            <th>Durum</th>
+            <th>Hesap</th>
+            <th>Oluşturulma</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <div class="footer">
+        Seçili kişi: <span class="tag" id="selCount">0</span>
+      </div>
+    </div>
+
+    <!-- MESAJ -->
+    <div class="section card">
+      <header><h3>Mesaj İçeriği</h3></header>
+      <div class="grid cols-2">
+        <div class="field">
+          <label>Başlık*</label>
+          <input id="title" placeholder="Örn: Yeni Duyuru" />
+        </div>
+        <div class="field">
+          <label>Mesaj*</label>
+          <input id="message" placeholder="Örn: Yarın saat 19:00'da toplantı..." />
+        </div>
+      </div>
+      <div class="field">
+        <label>Ek Veri (JSON) — opsiyonel</label>
+        <textarea id="dataJson" rows="5" placeholder='{"screen":"news","postId":123}'></textarea>
+      </div>
+    </div>
+
+    <!-- SONUÇ -->
+    <div class="section card">
+      <header><h3>Sonuç</h3></header>
+      <pre class="results" id="resultBox">// Gönderim sonuçları burada görünecek</pre>
+      <div class="footer">
+        <button class="btn ghost" id="btnCopy"><i class="fa fa-copy"></i> Çıktıyı Kopyala</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =========== KISA YARDIMCILAR ===========
+    const $ = s => document.querySelector(s);
+    const tbody = $('#tbl tbody');
+
+    function escapeHtml(s){return String(s??'').replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));}
+    function showResult(text){ $('#resultBox').textContent = text; }
+    function appendResult(text){ $('#resultBox').textContent += '\\n' + text; }
+
+    async function requestText(url, options={}){
+      const r = await fetch(url, options);
+      const body = await r.text();
+      if(!r.ok){ throw new Error(`HTTP ${r.status}\\n${body.slice(0,600)}`); }
+      return body;
+    }
+    async function requestJSON(url, options={}){
+      const txt = await requestText(url, options);
+      try { return JSON.parse(txt); }
+      catch(e){ throw new Error(`JSON parse hatası: ${e.message}\\nGövde örneği:\\n${txt.slice(0,600)}`); }
+    }
+
+    // =========== CONFIG =========== 
+    const cfg = {
+      get USERS_URL(){ return $('#cfgUsersUrl').value.trim(); },
+      get PUSH_URL(){  return $('#cfgPushUrl').value.trim();  },
+      get TOKEN(){     return $('#cfgToken').value.trim();     }
+    };
+
+    // =========== KULLANICILARI ÇEK ===========
+    let allUsers = [];
+
+    async function loadUsers(){
+      showResult('// Kullanıcılar yükleniyor…');
+      try{
+        const j = await requestJSON(cfg.USERS_URL, { cache:'no-store' });
+        const arr = Array.isArray(j.data) ? j.data : [];
+        // Beklenen alanlar:
+        // _id, status, firstName, lastName, email, isActive, created_at
+        allUsers = arr
+          .map(x => ({
+            id: String(x._id ?? '').trim(),
+            status: String(x.status ?? '').trim().toLowerCase(),   // "standart" | "pasif" | ...
+            name: `${x.firstName ?? ''} ${x.lastName ?? ''}`.trim(),
+            email: String(x.email ?? '').trim(),
+            isActive: String(x.isActive ?? '').trim(),             // "1" | "0"
+            created_at: String(x.created_at ?? '').trim()
+          }))
+          .filter(u => !!u.id);
+
+        renderUsers();
+        showResult('// Kullanıcılar yüklendi. Toplam: ' + allUsers.length);
+      }catch(e){
+        renderUsers([]); // boşalt
+        showResult('Kullanıcı listesi alınamadı:\\n' + e.message);
+      }
+    }
+
+    function renderUsers(){
+      const q = $('#search').value.trim().toLowerCase();
+      const st = $('#statusFilter').value;
+      const act = $('#activeFilter').value;
+
+      tbody.innerHTML = '';
+
+      const filtered = allUsers.filter(u=>{
+        const matchQ = !q || (u.id + ' ' + u.name + ' ' + u.email + ' ' + u.status).toLowerCase().includes(q);
+        const matchStatus = (st==='all') || (u.status === st);
+        const matchActive = (act==='all') || (u.isActive === act);
+        return matchQ && matchStatus && matchActive;
+      });
+
+      if(filtered.length === 0){
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td colspan="7" class="empty">Kayıt bulunamadı.</td>`;
+        tbody.appendChild(tr);
+      }else{
+        filtered.forEach(u=>{
+          const tr = document.createElement('tr');
+          tr.dataset.id = u.id;
+          tr.innerHTML = `
+            <td><input type="checkbox" class="chk"/></td>
+            <td><span class="kbd">${escapeHtml(u.id)}</span></td>
+            <td>${escapeHtml(u.name || '-')}</td>
+            <td>${escapeHtml(u.email || '-')}</td>
+            <td>${escapeHtml(u.status || '-')}</td>
+            <td>${u.isActive === '1'
+                  ? '<span class="pill green">Aktif</span>'
+                  : '<span class="pill red">Pasif</span>'}
+            </td>
+            <td>${escapeHtml(u.created_at || '-')}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      refreshSelCount();
+    }
+
+    // =========== SEÇİM ===========
+    function selectedIds(){
+      const ids = [];
+      tbody.querySelectorAll('tr').forEach(tr=>{
+        const chk = tr.querySelector('.chk');
+        if(chk && chk.checked){ ids.push(tr.dataset.id); }
+      });
+      // Elle eklenenler
+      const manual = $('#manualIds').value.trim();
+      if (manual){ manual.split(',').map(s=>s.trim()).filter(Boolean).forEach(id=>ids.push(id)); }
+      return Array.from(new Set(ids));
+    }
+    function refreshSelCount(){ $('#selCount').textContent = selectedIds().length; }
+
+    $('#checkAll').addEventListener('change', (e)=>{
+      const visible = Array.from(tbody.querySelectorAll('tr')).filter(tr => !tr.querySelector('.empty') && tr.style.display !== 'none');
+      visible.forEach(tr=>{ const chk = tr.querySelector('.chk'); if(chk) chk.checked = e.target.checked; });
+      refreshSelCount();
+    });
+    tbody.addEventListener('change', e=>{ if(e.target.classList.contains('chk')) refreshSelCount(); });
+
+    $('#btnSelectAll').onclick = ()=>{
+      Array.from(tbody.querySelectorAll('tr')).forEach(tr=>{
+        if(tr.querySelector('.empty') || tr.style.display==='none') return;
+        const chk = tr.querySelector('.chk'); if(chk) chk.checked = true;
+      });
+      refreshSelCount();
+    };
+    $('#btnClearSel').onclick = ()=>{
+      Array.from(tbody.querySelectorAll('.chk')).forEach(c=>c.checked=false);
+      $('#manualIds').value='';
+      refreshSelCount();
+    };
+
+    // =========== FİLTRELEME ===========
+    $('#search').addEventListener('input', renderUsers);
+    $('#statusFilter').addEventListener('change', renderUsers);
+    $('#activeFilter').addEventListener('change', renderUsers);
+
+    // =========== GÖNDER ===========
+    async function sendPush(){
+      const ids = selectedIds();
+      const title = $('#title').value.trim();
+      const message = $('#message').value.trim();
+      const dataRaw = $('#dataJson').value.trim();
+      const token = cfg.TOKEN;
+
+      if(!token) return alert('Admin Token giriniz.');
+      if(!title || !message) return alert('Başlık ve Mesaj zorunludur.');
+      if(ids.length===0) return alert('En az bir alıcı seçiniz veya ID listesi giriniz.');
+
+      let data = {};
+      if (dataRaw){
+        try{ data = JSON.parse(dataRaw); }
+        catch(e){ return alert('Ek Veri (JSON) geçerli değil: ' + e.message); }
+      }
+
+      // push_user.php form-urlencoded POST — preflight yok
+      const body = new URLSearchParams();
+      body.set('token', token);
+      body.set('userId', ids.join(','));      // ÖNEMLİ: _id’ler
+      body.set('title', title);
+      body.set('message', message);
+      if (Object.keys(data).length){ body.set('data', JSON.stringify(data)); }
+
+      showResult('// Gönderiliyor… Alıcı sayısı: ' + ids.length);
+      $('#btnSend').disabled = true;
+
+      try{
+        const txt = await requestText(cfg.PUSH_URL, {
+          method:'POST',
+          headers:{ 'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8' },
+          body: body.toString()
+        });
+
+        let parsed = null;
+        try { parsed = JSON.parse(txt); } catch {}
+        if (parsed){
+          showResult(JSON.stringify(parsed, null, 2));
+          if (parsed.success === false) appendResult('\\n// Sunucu hata döndürdü.');
+          else appendResult('\\n// Gönderim tamamlandı.');
+        } else {
+          showResult(txt);
+          appendResult('\\n// Uyarı: JSON yerine düz metin/HTML döndü.');
+        }
+      } catch(e){
+        showResult('Hata: ' + e.message);
+      } finally {
+        $('#btnSend').disabled = false;
+      }
+    }
+
+    // =========== EVENTLER ===========
+    $('#btnSend').onclick = sendPush;
+    $('#btnReload').onclick = loadUsers;
+    $('#btnCopy').onclick = async ()=>{
+      const txt = $('#resultBox').textContent || '';
+      try { await navigator.clipboard.writeText(txt); alert('Kopyalandı.'); }
+      catch { alert('Kopyalanamadı.'); }
+    };
+
+    // İlk yükleme
+    loadUsers();
+  </script>
+</body>
+</html>

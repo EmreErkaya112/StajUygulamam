@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Reklam Paylaşım</title>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  />
+  <link rel="stylesheet" href="css/oneriSikayet.css" />
+  <style>
+    body { display:flex; margin:0; font-family:Arial,sans-serif; height:100vh; }
+
+    .main-content {
+      flex:1; padding:1rem; box-sizing:border-box; overflow-y:auto;
+    }
+    .page-header {
+      display:flex; justify-content:space-between; align-items:center;
+    }
+    .add-btn {
+      background:#28a745; color:#fff; border:none;
+      padding:.5rem 1rem; cursor:pointer; border-radius:4px;
+    }
+    table {
+      width:100%; border-collapse:collapse; margin-top:1rem;
+      box-shadow:0 2px 6px rgba(0,0,0,0.1); border-radius:6px; overflow:hidden;
+    }
+    th, td {
+      padding:.75rem 1rem; border-bottom:1px solid #e0e0e0;
+      text-align:left; font-size:.9rem;
+    }
+    thead th {
+      background:#2A6592; color:#fff; text-transform:uppercase;
+      font-size:.85rem; letter-spacing:.5px;
+    }
+    tbody tr:nth-child(odd) { background:#f9fcff; }
+    tbody tr:hover { background:#e6f2fb; }
+    img.thumb {
+      max-width:80px; cursor:pointer; border-radius:4px; border:1px solid #ccc;
+    }
+ .modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.modal-overlay.active {
+  display: flex;
+}
+
+    .modal-content {
+      background:#fff; padding:1rem; border-radius:6px;
+      width:320px; max-width:90%; box-sizing:border-box;
+    }
+    .modal-header {
+      display:flex; justify-content:space-between; align-items:center;
+      margin-bottom:.5rem;
+    }
+    .modal-header .close-btn {
+      background:none; border:none; font-size:1.2rem; cursor:pointer;
+    }
+    .form-group { margin:.5rem 0; }
+    .form-group label {
+      display:block; margin-bottom:.25rem; font-size:.9rem;
+    }
+    .form-group input, .form-group textarea {
+      width:100%; padding:.5rem; box-sizing:border-box;
+      border:1px solid #ccc; border-radius:4px; font-size:.9rem;
+    }
+    .modal-buttons {
+      display:flex; justify-content:flex-end; gap:.5rem; margin-top:1rem;
+    }
+    .cancel-btn, .save-btn, .toggle-btn, .delete-btn {
+      padding:.4rem .8rem; border:none; border-radius:4px;
+      font-size:.85rem; cursor:pointer;
+    }
+    .cancel-btn { background:#ccc; }
+    .save-btn   { background:#28a745; color:#fff; }
+    .toggle-btn { background:#007bff; color:#fff; }
+    .delete-btn { background:#dc3545; color:#fff; }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar">
+    <h2>YAĞMURLU KÖY DERNEĞİ</h2>
+    <a href="index.html"><i class="fas fa-home"></i>Ana Sayfa</a>
+    <a href="kullaniciKayit.html"><i class="fas fa-user-plus"></i>Kullanıcı Kayıt</a>
+    <a href="kullaniciBilgileri.html"><i class="fas fa-users"></i>Kullanıcı Bilgileri</a>
+    <a href="gelirGider.html"><i class="fas fa-money-bill-wave"></i>Gelir - Gider</a>
+    <a href="post.html" ><i class="fas fa-newspaper"></i>Post Paylaşımı</a>
+    <a href="reklam.html" class="active"><i class="fas fa-ad"></i>Reklam</a>
+    <a href="poll_admin.html"><i class="fas fa-chart-pie"></i> Anketler</a>
+    <a href="galeri.html"><i class="fas fa-images"></i>Galeri</a>
+    <a href="oneriSikayet.html"><i class="fas fa-comment-alt"></i>Öneri & Şikayet</a>
+    <a href="isletme.html"><i class="fas fa-store"></i> İşletmeler</a>
+<a href="bildirim.html"><i class="fas fa-bell"></i> Bildirim Gönder</a>
+<a href="etkinlik.html"><i class="fas fa-calendar-check"></i> Etkinlikler</a>
+
+               <a href="about.html" >
+        <i class="fas fa-comment-alt"></i>Hakkımızda
+      </a>
+  </div>
+
+  <div class="main-content">
+    <div class="page-header">
+      <h3>Reklam Paylaşımı</h3>
+      <button id="addAdBtn" class="add-btn">Yeni Reklam</button>
+    </div>
+
+    <table id="adsTable">
+      <thead>
+        <tr>
+          <th>İşletme</th>
+          <th>Telefon</th>
+          <th>Başlık</th>
+          <th>Açıklama</th>
+          <th>Fotoğraf</th>
+          <th>Web Link</th>
+          <th>Durum</th>
+          <th>İşlemler</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="adModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 id="modalTitle">Yeni Reklam</h4>
+        <button class="close-btn" id="closeModal">&times;</button>
+      </div>
+      <form id="adForm" enctype="multipart/form-data">
+        <input type="hidden" id="editId" value="-1">
+        <div class="form-group">
+          <label>İşletme İsmi*</label>
+          <input type="text" id="company" required>
+        </div>
+        <div class="form-group">
+          <label>Telefon*</label>
+          <input type="tel" id="phone" required>
+        </div>
+        <div class="form-group">
+          <label>Başlık*</label>
+          <input type="text" id="title" required>
+        </div>
+        <div class="form-group">
+          <label>Açıklama*</label>
+          <textarea id="desc" rows="3" required></textarea>
+        </div>
+        <div class="form-group">
+          <label>Fotoğraf</label>
+          <input type="file" id="image">
+          <div id="imgPreview" style="margin-top:.5rem;"></div>
+        </div>
+        <div class="form-group">
+          <label>Web Site Linki</label>
+          <input type="url" id="link" placeholder="https://example.com">
+        </div>
+        <div class="modal-buttons">
+          <button type="button" class="cancel-btn" id="cancelBtn">İptal</button>
+          <button type="submit" class="save-btn">Kaydet</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Fullscreen Image -->
+  <div class="modal-overlay" id="fullImgModal">
+    <div class="modal-content">
+      <button class="close-btn" id="closeImgModal">&times;</button>
+      <img id="fullImg" style="max-width:90vw;max-height:90vh;">
+    </div>
+  </div>
+
+  <script>
+    const API = 'https://erkayasoft.com/api';
+    const tableBody = document.querySelector('#adsTable tbody');
+    const adModal   = document.getElementById('adModal');
+    const form      = document.getElementById('adForm');
+    const editId    = document.getElementById('editId');
+    const imgInp    = document.getElementById('image');
+    const imgPrev   = document.getElementById('imgPreview');
+    const fullImgModal = document.getElementById('fullImgModal');
+    const fullImg      = document.getElementById('fullImg');
+
+    document.getElementById('addAdBtn').onclick = openModal;
+    document.getElementById('closeModal').onclick = closeModal;
+    document.getElementById('cancelBtn').onclick   = closeModal;
+    document.getElementById('closeImgModal').onclick = () =>
+      fullImgModal.classList.remove('active');
+
+    imgInp.onchange = e => {
+      const f = e.target.files[0];
+      if (f) {
+        const r = new FileReader();
+        r.onload = ev =>
+          imgPrev.innerHTML = `<img src="${ev.target.result}" style="max-width:100px;border-radius:4px">`;
+        r.readAsDataURL(f);
+      } else imgPrev.innerHTML = '';
+    };
+
+    form.onsubmit = async e => {
+      e.preventDefault();
+      const id      = editId.value;
+      const url     = id==='-1'
+                    ? `${API}/add_reklam.php`
+                    : `${API}/add_reklam.php?id=${id}&update=1`;
+      const fd      = new FormData();
+      fd.append('company_name', document.getElementById('company').value);
+      fd.append('phone',        document.getElementById('phone').value);
+      fd.append('title',        document.getElementById('title').value);
+      fd.append('description',  document.getElementById('desc').value);
+      fd.append('website',      document.getElementById('link').value);
+      if (imgInp.files[0]) fd.append('image', imgInp.files[0]);
+
+   const res = await fetch(url, { method:'POST', body: fd });
+const j   = await res.json();
+
+      if (!j.success) return alert(j.error||'Kayıt hatası');
+      closeModal();
+      loadAds();
+    };
+
+    tableBody.addEventListener('click', async e => {
+      // Durum toggle
+      if (e.target.matches('.toggle-btn')) {
+        const btn    = e.target;
+        const id     = btn.dataset.id;
+        const active = btn.dataset.active==='1' ? 0 : 1;
+        const post   = await fetch(`${API}/update_reklam_status.php`, {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ id, is_active: active })
+        });
+        const j = await post.json();
+        if (!j.success) return alert(j.error||'Durum güncellenemedi');
+        loadAds();
+      }
+      // Silme
+if (e.target.matches('.delete-btn')) {
+  const id = e.target.dataset.id;
+  if (!confirm('Silmek istediğinize emin misiniz?')) return;
+
+  let res, json;
+  try {
+    res = await fetch(`${API}/delete_reklam.php`, {
+      method: 'POST',                       // ← artık POST
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id })          // ← id’yi JSON gövdesiyle yolluyoruz
+    });
+    json = await res.json();
+  } catch (err) {
+    return alert('Sunucuya bağlanırken hata: ' + err);
+  }
+
+  if (!json.success) {
+    return alert('Silme hatası: ' + (json.error || res.statusText));
+  }
+  loadAds();
+}
+    });
+
+    async function loadAds(){
+      tableBody.innerHTML = '';
+      const res = await fetch(`${API}/get_stories.php`);
+      const j   = await res.json();
+      if (!j.success) return;
+      j.data.forEach(ad => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${ad.company_name}</td>
+          <td>${ad.phone}</td>
+          <td>${ad.title}</td>
+          <td>${ad.description}</td>
+          <td>${
+            ad.image_url
+            ? `<img src="${ad.image_url}" class="thumb">`
+            : 'Yok'
+          }</td>
+          <td>${
+            ad.website
+            ? `<a href="${ad.website}" target="_blank">${ad.website}</a>`
+            : 'Web sitesi mevcut değil'
+          }</td>
+          <td>${ad.is_active? 'Aktif':'Pasif'}</td>
+          <td>
+            <button class="toggle-btn" data-id="${ad.id}" data-active="${ad.is_active}">
+              ${ad.is_active? 'Pasifleştir':'Aktifleştir'}
+            </button>
+            <button class="delete-btn" data-id="${ad.id}">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          </td>
+        `;
+        const img = tr.querySelector('img.thumb');
+        if (img) img.onclick = ()=>{
+          fullImg.src = img.src;
+          fullImgModal.classList.add('active');
+        };
+        tableBody.appendChild(tr);
+      });
+    }
+
+    function openModal(){
+      editId.value='-1';
+      document.getElementById('modalTitle').textContent='Yeni Reklam';
+      form.reset(); imgPrev.innerHTML='';
+      adModal.classList.add('active');
+    }
+    function closeModal(){
+      adModal.classList.remove('active');
+    }
+
+    loadAds();
+  </script>
+</body>
+</html>

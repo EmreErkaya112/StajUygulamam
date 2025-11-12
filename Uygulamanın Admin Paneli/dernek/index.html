@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Yağmurlu Köy Derneği Admin Paneli</title>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  />
+  <link rel="stylesheet" href="css/index.css" />
+  <style>
+    /* Tasarımınız sabit kalacak, eklemeler mininal */
+    .cards .card p { font-size:1.5rem; margin:0.5rem 0; }
+    .list-container ul { list-style:none; padding:0; margin:0; }
+    .list-container li {
+      display:flex; justify-content:space-between;
+      padding:0.5rem 0; border-bottom:1px solid #eee;
+    }
+    .gallery img { width:32%; margin-right:1%; }
+    .gallery img:last-child { margin-right:0; }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>YAĞMURLU KÖY DERNEĞİ YÖNETİM PANELİ</h2>
+<a href="index.html" class="active"><i class="fas fa-home"></i> Ana Sayfa</a>
+<a href="kullaniciKayit.html"><i class="fas fa-user-plus"></i> Kullanıcı Kayıt</a>
+<a href="kullaniciBilgileri.html"><i class="fas fa-users"></i> Kullanıcı Bilgileri</a>
+<a href="gelirGider.html"><i class="fas fa-money-bill-wave"></i> Gelir - Gider</a>
+<a href="post.html"><i class="fas fa-newspaper"></i> Post Paylaşımı</a>
+<a href="reklam.html"><i class="fas fa-ad"></i> Reklam</a>
+<a href="poll_admin.html"><i class="fas fa-chart-pie"></i> Anketler</a>
+<a href="galeri.html"><i class="fas fa-images"></i> Galeri</a>
+<a href="oneriSikayet.html"><i class="fas fa-comment-alt"></i> Öneri & Şikayet</a>
+
+<!-- Yeni eklenenler -->
+<a href="isletme.html"><i class="fas fa-store"></i> İşletmeler</a>
+<a href="bildirim.html"><i class="fas fa-bell"></i> Bildirim Gönder</a>
+<a href="etkinlik.html"><i class="fas fa-calendar-check"></i> Etkinlikler</a>
+
+<a href="about.html"><i class="fas fa-info-circle"></i> Hakkımızda</a>
+
+     
+      
+  </div>
+  <div class="main">
+    <div class="cards">
+      <div class="card"><h3>Toplam Kullanıcı</h3><p id="totalUsers">…</p></div>
+      <div class="card"><h3>Aylık Gelir</h3><p id="monthlyIncome">…</p></div>
+      <div class="card"><h3>Aylık Gider</h3><p id="monthlyExpense">…</p></div>
+    </div>
+    <div class="card list">
+      <h3>Geciken Ödemeler:</h3>
+      <div class="list-container"><ul id="overdueList"><li>Yükleniyor…</li></ul></div>
+    </div>
+    <div class="card">
+      <h3>Galeri – Son 3 Fotoğraf</h3>
+      <div class="gallery" id="galleryRecent"><p>Yükleniyor…</p></div>
+    </div>
+  </div>
+
+  <script>
+    const API = 'https://erkayasoft.com/api';
+
+    async function loadDashboard(){
+      // — Toplam kullanıcı
+      try {
+        let res = await fetch(`${API}/get_total_users.php`);
+        let j   = await res.json();
+        document.getElementById('totalUsers').textContent = j.success
+          ? j.total + ' kişi'
+          : 'Hata';
+      } catch(e){
+        console.error(e);
+        document.getElementById('totalUsers').textContent = 'Hata';
+      }
+
+      // — Aylık gelir/gider
+      try {
+        let res = await fetch(`${API}/get_monthly_income_expense.php`);
+        if(!res.ok) throw 'Sunucu hatası';
+        let j = await res.json();
+        document.getElementById('monthlyIncome').textContent  = j.success
+          ? '₺' + j.income.toLocaleString('tr-TR',{minimumFractionDigits:2})
+          : '–';
+        document.getElementById('monthlyExpense').textContent = j.success
+          ? '₺' + j.expense.toLocaleString('tr-TR',{minimumFractionDigits:2})
+          : '–';
+      } catch(e){
+        console.error('Gelir/Gider yüklenemedi:', e);
+        document.getElementById('monthlyIncome').textContent  = '–';
+        document.getElementById('monthlyExpense').textContent = '–';
+      }
+
+      // — Geciken ödemeler
+      try {
+        let res = await fetch(`${API}/get_overdue_payments.php`);
+        let j   = await res.json();
+        const ul = document.getElementById('overdueList');
+        ul.innerHTML = '';
+        if(j.success && j.data.length){
+          j.data.forEach(u=>{
+            const li = document.createElement('li');
+            li.innerHTML = `
+              <span class="name">${u.firstName} ${u.lastName}</span>
+              <span class="late-days">${u.daysOverdue} gün gecikme</span>
+            `;
+            ul.appendChild(li);
+          });
+        } else {
+          ul.innerHTML = '<li>Geciken ödeme yok</li>';
+        }
+      } catch(e){
+        console.error('Geciken ödemeler yüklenemedi:', e);
+        document.getElementById('overdueList').innerHTML = '<li>Hata</li>';
+      }
+
+      // — Son 3 fotoğraf
+      try {
+        let res = await fetch(`${API}/get_gallery_recent.php`);
+        let j   = await res.json();
+        const gallery = document.getElementById('galleryRecent');
+        gallery.innerHTML = '';
+        if(j.success && j.data.length){
+          j.data.forEach(url=>{
+            const img = document.createElement('img');
+            img.src = url;
+            gallery.appendChild(img);
+          });
+        } else {
+          gallery.innerHTML = '<p>Galeri boş</p>';
+        }
+      } catch(e){
+        console.error('Galeri yüklenemedi:', e);
+        document.getElementById('galleryRecent').innerHTML = '<p>Hata</p>';
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', loadDashboard);
+  </script>
+</body>
+</html>

@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Gelir – Gider Takibi</title>
+    <link rel="stylesheet" href="css/kullaniciKayit.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    body { font-family: Arial, sans-serif; margin:0; padding:0; display:flex; }
+
+
+    .main-content { flex:1; padding:1rem; }
+    .page-header { display:flex; flex-wrap:wrap; gap:.5rem; justify-content:space-between; align-items:center; }
+    .page-actions{ display:flex; gap:.5rem; }
+    .btn { border:none; padding:.5rem .8rem; border-radius:6px; cursor:pointer; }
+    .btn.add{ background:#28a745; color:#fff }
+    .btn.export{ background:#6c757d; color:#fff }
+    .btn.refresh{ background:#0d6efd; color:#fff }
+
+    .bar { margin:1rem 0; display:flex; flex-wrap:wrap; gap:.6rem; align-items:center }
+    select, input[type="month"]{ padding:.45rem .6rem; border:1px solid #d0d7de; border-radius:6px; }
+    .totals { display:flex; gap:1rem; margin:1rem 0; flex-wrap:wrap }
+    .totals .card{
+      padding:.6rem 1rem; border:1px solid #e1e4e8; background:#f9fafb; border-radius:8px; min-width:190px
+    }
+    .income{ color:#198754 } .expense{ color:#dc3545 } .balance{ color:#0d6efd }
+
+    .card { background:#fff; border:1px solid #e1e4e8; border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,.04) }
+    .card .card-header{ padding:.7rem 1rem; border-bottom:1px solid #e8e8e8; font-weight:600 }
+    .card .card-body{ padding:1rem }
+
+    table{ width:100%; border-collapse:collapse }
+    th,td{ border-bottom:1px solid #edf1f4; padding:.55rem .6rem; text-align:left; }
+    thead th{ background:#f6f8fa; font-weight:600 }
+    tbody tr:hover{ background:#f7fbff }
+    .row-actions{ display:flex; gap:.4rem }
+    .btn.small{ padding:.3rem .55rem; font-size:.9rem }
+    .btn.edit{ background:#ffc107; color:#111 }
+    .btn.delete{ background:#dc3545; color:#fff }
+
+    /* Modal */
+    .overlay{ position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.4); z-index:9999 }
+    .overlay.show{ display:flex }
+    .modal{ width:min(540px,94vw); background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 30px 80px rgba(0,0,0,.25); }
+    .modal header{ padding:.9rem 1rem; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center; background:#f7f7f9 }
+    .modal .content{ padding:1rem }
+    .modal .actions{ padding:.9rem 1rem; background:#fafafa; border-top:1px solid #eee; display:flex; gap:.5rem; justify-content:flex-end }
+    .x{ background:none; border:none; font-size:1.2rem; cursor:pointer }
+    .form-row{ display:flex; gap:.6rem }
+    .form-row .field{ flex:1 }
+    .field label{ display:block; font-size:.9rem; color:#444; margin-bottom:.25rem }
+    .field input, .field select, .field textarea{ width:100%; padding:.5rem .6rem; border:1px solid #d0d7de; border-radius:6px; }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>Yağmurlu Köy Derneği</h2>
+    <a href="index.html"><i class="fa fa-home"></i> Ana Sayfa</a>
+    <a href="kullaniciKayit.html"><i class="fa fa-user-plus"></i> Kullanıcı Kayıt</a>
+    <a href="kullaniciBilgileri.html"><i class="fa fa-users"></i> Kullanıcı Bilgileri</a>
+    <a class="active" href="gelirGider.html"><i class="fa fa-money-bill-wave"></i> Gelir – Gider</a>
+    <a href="post.html"><i class="fa fa-newspaper"></i> Post Paylaşımı</a>
+    <a href="reklam.html"><i class="fa fa-ad"></i> Reklam</a>
+    <a href="poll_admin.html"><i class="fa fa-chart-pie"></i> Anketler</a>
+    <a href="galeri.html"><i class="fa fa-images"></i> Galeri</a>
+    <a href="oneriSikayet.html"><i class="fa fa-comment-alt"></i> Öneri & Şikayet</a>
+    <a href="isletme.html"><i class="fas fa-store"></i> İşletmeler</a>
+<a href="bildirim.html"><i class="fas fa-bell"></i> Bildirim Gönder</a>
+<a href="etkinlik.html"><i class="fas fa-calendar-check"></i> Etkinlikler</a>
+
+    <a href="about.html"><i class="fa fa-info-circle"></i> Hakkımızda</a>
+  </div>
+
+  <div class="main-content">
+    <div class="page-header">
+      <h3>Gelir – Gider Takibi</h3>
+      <div class="page-actions">
+        <button id="btnExport" class="btn export"><i class="fa fa-file-excel"></i> Excel’e Aktar</button>
+        <button id="btnReload" class="btn refresh"><i class="fa fa-rotate"></i> Yenile</button>
+        <button id="btnAdd" class="btn add"><i class="fa fa-plus"></i> Yeni İşlem</button>
+      </div>
+    </div>
+
+    <div class="bar">
+      <label>Ay filtresi:
+        <select id="monthFilter">
+          <option value="all">Tüm Aylar</option>
+        </select>
+      </label>
+      <label>Grafik görünümü:
+        <select id="chartMode">
+          <option value="auto">Otomatik</option>
+          <option value="month">Seçili Ay (günlük)</option>
+          <option value="year">Son 12 Ay</option>
+        </select>
+      </label>
+      <label>Arama:
+        <input type="text" id="searchBox" placeholder="Kategori / açıklama"/>
+      </label>
+      <label>Tür:
+        <select id="typeFilter">
+          <option value="">Tümü</option>
+          <option value="income">Gelir</option>
+          <option value="expense">Gider</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="totals">
+      <div class="card income"><b>Toplam Gelir:</b> <span id="tIncome">0 ₺</span></div>
+      <div class="card expense"><b>Toplam Gider:</b> <span id="tExpense">0 ₺</span></div>
+      <div class="card balance"><b>Bakiye:</b> <span id="tBalance">0 ₺</span></div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-header"><i class="fa fa-chart-line"></i> Grafik</div>
+      <div class="card-body">
+        <canvas id="chart" height="100"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><i class="fa fa-list"></i> Kayıtlar</div>
+      <div class="card-body">
+        <table id="tbl">
+          <thead>
+            <tr>
+              <th>Tür</th>
+              <th>Kategori</th>
+              <th>Açıklama</th>
+              <th>Tutar (₺)</th>
+              <th>Tarih</th>
+              <th>İşlem</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Ekle/Düzenle -->
+  <div class="overlay" id="modal">
+    <div class="modal" role="dialog" aria-modal="true">
+      <header>
+        <h4 id="modalTitle">Yeni İşlem</h4>
+        <button class="x" id="xClose" aria-label="Kapat">&times;</button>
+      </header>
+      <div class="content">
+        <form id="frm">
+          <input type="hidden" id="rowId" />
+          <div class="form-row">
+            <div class="field">
+              <label for="type">Tür</label>
+              <select id="type" required>
+                <option value="">Seçiniz</option>
+                <option value="income">Gelir</option>
+                <option value="expense">Gider</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="date">Tarih</label>
+              <input type="date" id="date" required />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="field">
+              <label for="category">Kategori</label>
+              <input type="text" id="category" required placeholder="Örn: Aidat, Bağış…" />
+            </div>
+            <div class="field">
+              <label for="amount">Tutar (₺)</label>
+              <input type="number" step="0.01" id="amount" required placeholder="1000.00" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="description">Açıklama</label>
+            <textarea id="description" rows="2" placeholder="Kısa açıklama…"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="actions">
+        <button class="btn" id="btnCancel">İptal</button>
+        <button class="btn add" id="btnSave">Kaydet</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Sil onayı -->
+  <div class="overlay" id="confirm">
+    <div class="modal" role="dialog" aria-modal="true">
+      <header>
+        <h4>Onay</h4>
+        <button class="x" id="xConfirm" aria-label="Kapat">&times;</button>
+      </header>
+      <div class="content"><p id="confirmText">Bu kaydı silmek istiyor musunuz?</p></div>
+      <div class="actions">
+        <button class="btn" id="btnNo">Vazgeç</button>
+        <button class="btn delete" id="btnYes">Evet, Sil</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+  <script>
+  "use strict";
+
+  // ======= AYARLAR =======
+  const apiBase = "https://erkayasoft.com/api";
+  let USE_API = true;  // API hatasında otomatik false'a düşer (localStorage demo modu)
+
+  // ======= DURUMLAR =======
+  let allRows = [];
+  let chart = null;
+  let deleteId = null;
+
+  // ======= YARDIMCILAR =======
+  const $ = (sel) => document.querySelector(sel);
+  const show = (el) => el.classList.add("show");
+  const hide = (el) => el.classList.remove("show");
+  const tl = (n) => Number(n || 0).toLocaleString("tr-TR", { minimumFractionDigits: 2 }) + " ₺";
+
+  // local demo saklama anahtarı
+  const LS_KEY = "ygd_transactions";
+
+  function readLocal() {
+    try {
+      const raw = localStorage.getItem(LS_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  }
+  function writeLocal(list) {
+    try { localStorage.setItem(LS_KEY, JSON.stringify(list)); } catch {}
+  }
+  function nextLocalId(list) {
+    return (list.reduce((m, r) => Math.max(m, Number(r.id) || 0), 0) + 1);
+  }
+
+  // ======= OLAYLAR =======
+  document.addEventListener("DOMContentLoaded", () => {
+    // butonlar
+    $("#btnAdd").onclick = () => openModal();
+    $("#btnReload").onclick = loadData;
+    $("#btnExport").onclick = exportExcel;
+
+    // modal butonları
+    $("#xClose").onclick = () => hide($("#modal"));
+    $("#btnCancel").onclick = () => hide($("#modal"));
+    $("#btnSave").onclick = saveForm;
+
+    // sil onay modal
+    $("#xConfirm").onclick = () => hide($("#confirm"));
+    $("#btnNo").onclick = () => hide($("#confirm"));
+    $("#btnYes").onclick = doDelete;
+
+    // filtreler
+    $("#monthFilter").onchange = renderFiltered;
+    $("#chartMode").onchange  = renderChart;
+    $("#typeFilter").onchange = renderFiltered;
+    $("#searchBox").oninput   = renderFiltered;
+
+    loadData();
+  });
+
+  // ======= VERİ YÜKLEME =======
+  async function loadData() {
+    try {
+      if (!USE_API) throw new Error("demo"); // demo moduna zorla
+      const r = await fetch(`${apiBase}/get_transactions.php`, { cache: "no-store" });
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      const j = await r.json();
+      if (!j.success) throw new Error(j.error || "API hata");
+      allRows = Array.isArray(j.data) ? j.data : [];
+    } catch (e) {
+      // API yoksa local demo
+      USE_API = false;
+      if (readLocal().length === 0) {
+        // küçük demo seed
+        writeLocal([
+          { id:1, type:"income",  category:"Aidat",  description:"Aylık aidat", amount:250, date:new Date().toISOString().slice(0,10) },
+          { id:2, type:"expense", category:"Elektrik",description:"Fatura",     amount:120.50, date:new Date().toISOString().slice(0,10) },
+          { id:3, type:"income",  category:"Bağış",  description:"Nakit",      amount:750, date:new Date().toISOString().slice(0,10) }
+        ]);
+      }
+      allRows = readLocal();
+    }
+
+    // Ay filtresi (YYYY-MM)
+    const select = $("#monthFilter");
+    select.innerHTML = '<option value="all">Tüm Aylar</option>';
+    const months = [...new Set(allRows.map(x => String(x.date).slice(0,7)))].sort().reverse();
+    months.forEach(m => {
+      if (!/^\d{4}-\d{2}$/.test(m)) return;
+      const d = new Date(`${m}-01T00:00:00`);
+      const label = d.toLocaleString("tr-TR", { month: "long", year: "numeric" });
+      const opt = document.createElement("option");
+      opt.value = m;
+      opt.textContent = label;
+      select.appendChild(opt);
+    });
+
+    renderFiltered();
+  }
+
+  // ======= FİLTRE =======
+  function getFiltered() {
+    const m = $("#monthFilter").value;    // 'all' veya 'YYYY-MM'
+    const t = $("#typeFilter").value;     // '', 'income','expense'
+    const q = $("#searchBox").value.trim().toLowerCase();
+
+    return allRows.filter(r => {
+      const dateStr = String(r.date || "");
+      const okMonth = (m === "all") || dateStr.startsWith(m);
+      const okType  = (!t) || (r.type === t);
+      const text    = `${r.category || ""} ${r.description || ""}`.toLowerCase();
+      const okText  = (!q) || text.includes(q);
+      return okMonth && okType && okText;
+    });
+  }
+
+  function renderFiltered() {
+    const rows = getFiltered();
+    renderTable(rows);
+    renderTotals(rows);
+    renderChart();
+  }
+
+  // ======= TABLO =======
+  function renderTable(rows) {
+    const tb = $("#tbl tbody");
+    tb.innerHTML = "";
+
+    rows
+      .slice() // kopya
+      .sort((a, b) => String(b.date).localeCompare(String(a.date)))
+      .forEach(r => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><span class="${r.type}">${r.type === "income" ? "Gelir" : "Gider"}</span></td>
+          <td>${r.category ? escapeHtml(r.category) : "-"}</td>
+          <td>${r.description ? escapeHtml(r.description) : "-"}</td>
+          <td>${tl(r.amount)}</td>
+          <td>${escapeHtml(String(r.date))}</td>
+          <td class="row-actions">
+            <button class="btn small edit"  data-id="${r.id}"><i class="fa fa-pen"></i> Düzenle</button>
+            <button class="btn small delete" data-id="${r.id}"><i class="fa fa-trash"></i> Sil</button>
+          </td>
+        `;
+        tb.appendChild(tr);
+      });
+
+    tb.onclick = (e) => {
+      const btn = e.target.closest("button");
+      if (!btn) return;
+      const id = Number(btn.dataset.id);
+      const row = allRows.find(x => Number(x.id) === id);
+      if (btn.classList.contains("edit")) {
+        openModal(row);
+      } else if (btn.classList.contains("delete")) {
+        deleteId = id;
+        show($("#confirm"));
+      }
+    };
+  }
+
+  // XSS’e karşı ufak kaçış
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, m => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+    }[m]));
+  }
+
+  // ======= TOPLAMLAR =======
+  function renderTotals(rows) {
+    const totals = rows.reduce((acc, r) => {
+      const a = Number(r.amount) || 0;
+      if (r.type === "income") acc.income += a; else acc.expense += a;
+      return acc;
+    }, { income:0, expense:0 });
+    $("#tIncome").textContent  = tl(totals.income);
+    $("#tExpense").textContent = tl(totals.expense);
+    $("#tBalance").textContent = tl(totals.income - totals.expense);
+  }
+
+  // ======= GRAFİK =======
+function renderChart(){
+  const ctx = $('#chart');
+  const rows = getFiltered();
+  const modeSel  = $('#chartMode').value;
+  const monthSel = $('#monthFilter').value;
+
+  // Otomatik: ay seçiliyse günlük; "Tüm" ise son 12 ay
+  const mode = (modeSel === 'auto') ? (monthSel === 'all' ? 'year' : 'month') : modeSel;
+
+  let labels = [], inc = [], exp = [];
+
+  if (mode === 'month') {
+    // seçili ay günlük
+    const days = {};
+    rows.forEach(r => {
+      const d = String(r.date || '').slice(8,10); // 'DD'
+      if (!days[d]) days[d] = { inc: 0, exp: 0 };
+
+      const amt = Number(r.amount) || 0;
+      if (r.type === 'income') {
+        days[d].inc += amt;
+      } else {
+        days[d].exp += amt;
+      }
+    });
+
+    labels = Object.keys(days).sort((a,b)=> Number(a) - Number(b));
+    inc    = labels.map(d => days[d].inc);
+    exp    = labels.map(d => days[d].exp);
+
+  } else {
+    // son 12 ay (YYYY-MM)
+    const map = {};
+    allRows.forEach(r => {
+      const ym = String(r.date || '').slice(0,7);
+      if (!/^\d{4}-\d{2}$/.test(ym)) return;
+      if (!map[ym]) map[ym] = { inc: 0, exp: 0 };
+
+      const amt = Number(r.amount) || 0;
+      if (r.type === 'income') {
+        map[ym].inc += amt;
+      } else {
+        map[ym].exp += amt;
+      }
+    });
+
+    labels = Object.keys(map).sort().slice(-12);
+    inc    = labels.map(m => map[m].inc);
+    exp    = labels.map(m => map[m].exp);
+  }
+
+  if (chart) chart.destroy();
+  chart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Gelir', data: inc, borderWidth: 1 },
+        { label: 'Gider', data: exp, borderWidth: 1 }
+      ]
+    },
+    options: {
+      responsive: true,
+      scales: { y: { beginAtZero: true } },
+      plugins: { legend: { position: 'top' } }
+    }
+  });
+}
+
+
+  // ======= MODAL =======
+  function openModal(row) {
+    $("#modalTitle").textContent = row ? "İşlemi Düzenle" : "Yeni İşlem";
+    $("#rowId").value = row?.id ?? "";
+    $("#type").value  = row?.type ?? "";
+    $("#date").value  = row?.date ?? new Date().toISOString().slice(0,10);
+    $("#category").value = row?.category ?? "";
+    $("#amount").value   = row?.amount ?? "";
+    $("#description").value = row?.description ?? "";
+    show($("#modal"));
+  }
+
+  // ======= KAYDET =======
+  async function saveForm() {
+    const id = String($("#rowId").value || "").trim();
+    const payload = {
+      type: $("#type").value,
+      category: $("#category").value.trim(),
+      description: $("#description").value.trim(),
+      amount: Number($("#amount").value),
+      date: $("#date").value
+    };
+    if (!payload.type || !payload.category || !payload.amount || !payload.date) {
+      alert("Lütfen tüm zorunlu alanları doldurun.");
+      return;
+    }
+
+    try {
+      if (USE_API) {
+        const url  = id ? `${apiBase}/update_transaction.php` : `${apiBase}/add_transaction.php`;
+        const body = id ? { id:Number(id), ...payload } : payload;
+        const r = await fetch(url, { method:"POST", headers:{ "Content-Type":"application/json" }, body:JSON.stringify(body) });
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        const j = await r.json();
+        if (!j.success) throw new Error(j.error || "API hata");
+      } else {
+        // Local demo
+        const list = readLocal();
+        if (id) {
+          const idx = list.findIndex(x => String(x.id) === String(id));
+          if (idx >= 0) list[idx] = { id:Number(id), ...payload };
+        } else {
+          const newId = nextLocalId(list);
+          list.push({ id:newId, ...payload });
+        }
+        writeLocal(list);
+      }
+
+      hide($("#modal"));
+      await loadData();
+    } catch (e) {
+      alert("Kaydedilemedi: " + e.message);
+    }
+  }
+
+  // ======= SİL =======
+  async function doDelete() {
+    if (!deleteId) return;
+    try {
+      if (USE_API) {
+        const r = await fetch(`${apiBase}/delete_transaction.php`, {
+          method:"POST",
+          headers:{ "Content-Type":"application/json" },
+          body: JSON.stringify({ id: Number(deleteId) })
+        });
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        const j = await r.json();
+        if (!j.success) throw new Error(j.error || "API hata");
+      } else {
+        const list = readLocal().filter(x => Number(x.id) !== Number(deleteId));
+        writeLocal(list);
+      }
+
+      hide($("#confirm"));
+      deleteId = null;
+      await loadData();
+    } catch (e) {
+      alert("Silinemedi: " + e.message);
+    }
+  }
+
+  // ======= DIŞA AKTAR =======
+  function exportExcel() {
+    if (USE_API) {
+      const m = $("#monthFilter").value;
+      const t = $("#typeFilter").value;
+      const q = encodeURIComponent($("#searchBox").value.trim());
+      const url = `${apiBase}/export_transactions.php?month=${m}&type=${t}&q=${q}`;
+      window.location.href = url;
+      return;
+    }
+
+    // Demo mod: CSV indir
+    const rows = getFiltered();
+    const headers = ["Tür","Kategori","Açıklama","Tutar","Tarih"];
+    const lines = [headers.join(";")];
+    rows.forEach(r => {
+      lines.push([
+        r.type === "income" ? "Gelir" : "Gider",
+        (r.category || "").replace(/;/g, ","),
+        (r.description || "").replace(/;/g, ","),
+        String(r.amount),
+        String(r.date)
+      ].join(";"));
+    });
+    const blob = new Blob([ "\uFEFF" + lines.join("\n") ], { type:"text/csv;charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "gelir_gider.csv";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
+  </script>
+</body>
+</html>

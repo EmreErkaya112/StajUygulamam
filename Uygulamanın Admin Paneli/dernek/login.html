@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Giriş</title>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap");
+
+      /* danışman login sayfası */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+
+      body {
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        background-color: #fff;
+      }
+
+      .form-box {
+        width: 100%;
+        width: 400px;
+        background-color: #f5faff; /* Açık mavi (kutunun arka planı) */
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        border-radius: 25px;
+        padding: 40px 30px;
+        text-align: center;
+      }
+
+      .button-box {
+        background: transparent;
+        padding: 10px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+      }
+
+      .toggle-btn {
+        font-size: 28px;
+        font-weight: 800;
+        color: #000;
+        border: none;
+        background: none;
+        cursor: default;
+      }
+
+      .input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .input-field {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        background: white;
+        font-size: 16px;
+      }
+
+      .input-field:focus {
+        border: 1px solid #0077cc;
+        box-shadow: 0 0 5px rgba(0, 119, 204, 0.5);
+        outline: none;
+      }
+
+      .label-name {
+        font-size: 15px;
+        text-align: left;
+      }
+
+      .submit-btn {
+        margin-top: 20px;
+        background: #4d4c4c;
+        color: #fff;
+        font-weight: bold;
+        border: none;
+        border-radius: 30px;
+        padding: 12px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+      }
+
+      .submit-btn:hover {
+        background-color: #2c2c2c;
+        transition: 0.3s ease;
+      }
+      .password-wrapper {
+        position: relative;
+        width: 100%;
+      }
+
+      .password-wrapper input {
+        width: 100%;
+        padding-right: 40px; /* Göz simgesi için boşluk */
+      }
+      .toggle-password {
+        position: absolute;
+        top: 50%;
+        right: 12px;
+        transform: translateY(-50%);
+        cursor: pointer;
+        font-size: 20px;
+        color: var(--dark-color);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="form-box">
+      <div class="button-box">
+        <button type="button" class="toggle-btn">Giriş Yap</button>
+      </div>
+      <form id="Login" class="input-group">
+        <label class="label-name">Kullanıcı Adı</label>
+        <input type="text" id="kullaniciadi" class="input-field" required />
+
+        <label class="label-name">Parola</label>
+        <div class="password-wrapper">
+          <input type="password" id="password" class="input-field" required />
+          <i class="bx bx-hide toggle-password" id="togglePassword"></i>
+        </div>
+
+        <button type="submit" class="submit-btn">Giriş Yap</button>
+      </form>
+    </div>
+
+    <script>
+      const togglePassword = document.getElementById("togglePassword");
+      const passwordInput = document.getElementById("password");
+
+      togglePassword.addEventListener("click", function () {
+        const isPassword = passwordInput.type === "password";
+        passwordInput.type = isPassword ? "text" : "password";
+        this.classList.toggle("bx-hide");
+        this.classList.toggle("bx-show");
+      });
+    </script>
+  </body>
+</html>

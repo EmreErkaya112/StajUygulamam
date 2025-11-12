@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Kullanıcı Kayıt</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="css/kullaniciKayit.css" />
+      <!-- Firebase App (core) ve Realtime Database kütüphaneleri -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+
+
+  </head>
+  <body>
+    <div class="sidebar">
+      <h2>YAĞMURLU KÖY DERNEĞİ YÖNETİM PANELİ</h2>
+      <a href="index.html">
+        <i class="fas fa-home"></i>
+        Ana Sayfa
+      </a>
+      <a href="kullaniciKayit.html" class="active">
+        <i class="fas fa-user-plus"></i>
+        Kullanıcı Kayıt
+      </a>
+      <a href="kullaniciBilgileri.html">
+        <i class="fas fa-users"></i>
+        Kullanıcı Bilgileri
+      </a>
+      <a href="gelirGider.html">
+        <i class="fas fa-money-bill-wave"></i>
+        Gelir - Gider
+      </a>
+      <a href="post.html">
+        <i class="fas fa-newspaper"></i>
+        Post Paylaşımı
+      </a>
+      <a href="reklam.html">
+        <i class="fas fa-ad"></i>
+        Reklam
+      </a>
+      <a href="poll_admin.html"><i class="fas fa-chart-pie"></i> Anketler</a>
+      <a href="galeri.html">
+        <i class="fas fa-images"></i>
+        Galeri
+      </a>
+      <a href="oneriSikayet.html">
+        <i class="fas fa-comment-alt"></i>
+        Öneri & Şikayet
+      </a>
+
+      <a href="isletme.html"><i class="fas fa-store"></i> İşletmeler</a>
+<a href="bildirim.html"><i class="fas fa-bell"></i> Bildirim Gönder</a>
+<a href="etkinlik.html"><i class="fas fa-calendar-check"></i> Etkinlikler</a>
+
+                 <a href="about.html" >
+        <i class="fas fa-comment-alt"></i>Hakkımızda
+      </a>
+    </div>
+
+    <div class="main-content">
+      <div class="menu-buttons">
+        <button onclick="showSection('onay')" class="active">Kayıt Onayı</button>
+        <button onclick="showSection('yeni')">Yeni Kayıt Oluştur</button>
+      </div>
+
+      <div id="onay" class="section active">
+        <h3>Kayıt Olan Kullanıcılar</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Ad</th>
+              <th>Soyad</th>
+              <th>Adres</th>
+              <th>Telefon</th>
+              <th>TC</th>
+              <th>Mail</th>
+              <th>Üye Durumu</th>
+              <th>İşlem</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Ali</td>
+              <td>Yılmaz</td>
+              <td>Ankara</td>
+              <td>05555555555</td>
+              <td>12345678901</td>
+              <td>ali@mail.com</td>
+              <td><span class="member-status gold">Gold</span></td>
+              <td>
+                <div class="action-buttons">
+                  <button class="btn onay">
+                    <i class="fas fa-check"></i>
+                    Onayla
+                  </button>
+                  <button class="btn sil">
+                    <i class="fas fa-trash"></i>
+                    Sil
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>Ayşe</td>
+              <td>Kaya</td>
+              <td>İstanbul</td>
+              <td>05444444444</td>
+              <td>98765432109</td>
+              <td>ayse@mail.com</td>
+              <td><span class="member-status standart">Standart</span></td>
+              <td>
+                <div class="action-buttons">
+                  <button class="btn onay">
+                    <i class="fas fa-check"></i>
+                    Onayla
+                  </button>
+                  <button class="btn sil">
+                    <i class="fas fa-trash"></i>
+                    Sil
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div id="yeni" class="section">
+        <h3>Yeni Kullanıcı Kaydı</h3>
+        <form>
+          <div class="form-group">
+            <label for="memberStatus">Üye Durumu</label>
+            <select id="memberStatus" class="form-control" required>
+              <option value="">Seçiniz...</option>
+              <option value="gold">Gold</option>
+              <option value="standart">Standart</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="firstName">Ad</label>
+            <input type="text" id="firstName" class="form-control" required />
+          </div>
+
+          <div class="form-group">
+            <label for="lastName">Soyad</label>
+            <input type="text" id="lastName" class="form-control" required />
+          </div>
+
+          <div class="form-group">
+            <label for="address">Adres</label>
+            <input type="text" id="address" class="form-control" required />
+          </div>
+
+          <div class="form-group">
+            <label for="phone">Telefon</label>
+            <input type="tel" id="phone" class="form-control" required />
+          </div>
+
+          <div class="form-group">
+            <label for="tc">TC Kimlik No</label>
+            <input type="text" id="tc" class="form-control" required />
+          </div>
+
+          <div class="form-group">
+            <label for="email">E-posta</label>
+            <input type="email" id="email" class="form-control" required />
+          </div>
+
+          <div class="form-group">
+            <label for="text">Şifre</label>
+            <input type="text" id="password" class="form-control" required />
+          </div>
+
+          <button type="submit" class="submit-btn">
+            <i class="fas fa-user-plus"></i>
+            Kaydı Oluştur
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      function showSection(id) {
+        // Butonları aktif/pasif yap
+        document.querySelectorAll(".menu-buttons button").forEach((btn) => {
+          btn.classList.remove("active");
+          if (btn.textContent.includes(id === "onay" ? "Onayı" : "Oluştur")) {
+            btn.classList.add("active");
+          }
+        });
+
+        // Bölümleri değiştir
+        document.querySelectorAll(".section").forEach((section) => {
+          section.classList.remove("active");
+        });
+        document.getElementById(id).classList.add("active");
+      }
+ const form = document.querySelector(".main-content form");
+  form.addEventListener("submit", async function(e) {
+    e.preventDefault();
+    // Değerleri al
+    const data = {
+  status:    document.getElementById("memberStatus").value,
+  firstName: document.getElementById("firstName").value.trim(),
+  lastName:  document.getElementById("lastName").value.trim(),
+  address:   document.getElementById("address").value.trim(),
+  phone:     document.getElementById("phone").value.trim(),
+  tc:        document.getElementById("tc").value.trim(),
+  email:     document.getElementById("email").value.trim(),
+  password:  document.getElementById("password").value,
+  isActive:  true // ✅ veya false (checkbox ile bağlayabilirsin)
+};
+
+    // Basit validasyon
+    if (Object.values(data).some(v => !v)) {
+      alert("Lütfen tüm alanları doldurunuz.");
+      return;
+    }
+
+    try {
+const res = await fetch("https://erkayasoft.com/api/add.php", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(data)
+});
+
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || res.statusText);
+
+      alert("Kayıt başarılı!");
+      form.reset();
+      showSection("onay");
+      loadUsers(); // aşağıda tanımlanacak
+    } catch (err) {
+      alert("Hata: " + err.message);
+    }
+  });
+
+  // Onay tablosunu dolduracak fonksiyon
+async function loadUsers() {
+  const tbody = document.querySelector("#onay tbody");
+  try {
+    const res = await fetch("https://erkayasoft.com/api/kisiler.php");
+    const json = await res.json();
+    const users = json.data;
+
+    const passiveUsers = users.filter(u => u.isActive == 0 || u.isActive === "0");
+
+    if (passiveUsers.length === 0) {
+      tbody.innerHTML = "<tr><td colspan='8'>Onay bekleyen kullanıcı yok.</td></tr>";
+      return;
+    }
+
+    tbody.innerHTML = passiveUsers.map(u => `
+      <tr>
+        <td>${u.firstName}</td>
+        <td>${u.lastName}</td>
+        <td>${u.address}</td>
+        <td>${u.phone}</td>
+        <td>${u.tc}</td>
+        <td>${u.email}</td>
+        <td><span class="member-status ${u.status}">${u.status}</span></td>
+        <td>
+          <div class="action-buttons">
+            <button class="btn onay" onclick="approveUser(${u._id})">
+              <i class="fas fa-check"></i> Onayla
+            </button>
+            <button class="btn sil" onclick="deleteUser(${u._id})">
+              <i class="fas fa-trash"></i> Sil
+            </button>
+          </div>
+        </td>
+      </tr>
+    `).join("");
+  } catch (err) {
+    console.error(err);
+    tbody.innerHTML = "<tr><td colspan='8'>Veri alınamadı</td></tr>";
+  }
+}
+
+async function approveUser(id) {
+  try {
+    const res = await fetch(`https://erkayasoft.com/api/update.php?id=${id}`, {
+      method: "POST", // 👈 geçici olarak POST'a çevir
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ isActive: 1 })
+    });
+
+    const json = await res.json();
+    console.log(json);
+  } catch (err) {
+    alert("Hata: " + err.message);
+  }
+}
+
+
+
+
+  // Silme fonksiyonu
+async function deleteUser(id) {
+  if (!confirm("Silmek istediğinize emin misiniz?")) return;
+  const res = await fetch(`https://erkayasoft.com/api/delete.php?id=${id}`, {
+    method: "DELETE"
+  });
+  const json = await res.json();
+  if (json.success) {
+    alert("Kullanıcı silindi");
+    loadUsers();
+  } else {
+    alert("Silme hatası");
+  }
+}
+
+
+  // Sayfa yüklendiğinde
+  loadUsers();
+    </script>
+  </body>
+</html>

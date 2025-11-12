@@ -1,0 +1,730 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>İşletmeler Yönetim Paneli</title>
+        <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  <script src="https://cdn.tailwindcss.com"></script>
+     <link rel="stylesheet" href="css/oneriSikayet.css" />
+     
+  <style>
+    /* Basit yardımcı sınıflar – @apply kullanmadan */
+    .btn{display:inline-flex;align-items:center;gap:.5rem;border-radius:.6rem;padding:.5rem .75rem;font-size:.875rem;font-weight:600}
+    .btn-primary{background:#2563eb;color:#fff}.btn-primary:hover{background:#1d4ed8}
+    .btn-outline{border:1px solid #d1d5db}.btn-outline:hover{background:#f9fafb}
+    .btn-danger{background:#dc2626;color:#fff}.btn-danger:hover{background:#b91c1c}
+    .badge{display:inline-flex;align-items:center;border-radius:9999px;padding:.125rem .625rem;font-size:.75rem;font-weight:600}
+    .badge-green{background:#dcfce7;color:#166534}.badge-gray{background:#f3f4f6;color:#374151}
+    .input{display:block;width:100%;border:1px solid #d1d5db;border-radius:.6rem;padding:.5rem .75rem;font-size:.875rem}
+    .input:focus{outline:2px solid #2563eb1f}
+    .label{font-size:.875rem;font-weight:600;color:#374151}
+    .card{border:1px solid #e5e7eb;border-radius:1rem;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+    .table th{padding:.5rem .75rem;text-align:left;font-size:.75rem;font-weight:700;color:#374151}
+    .table td{padding:.5rem .75rem;font-size:.875rem;color:#111827}
+    .modal{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.4);padding:1rem}
+    .modal.open{display:flex}
+     .sidebar{
+    position: fixed;     /* sayfaya sabitle */
+    left: 0; top: 0; bottom: 0;
+    width: 18rem;        /* ~288px, istersen değiştir */
+    overflow: auto;
+    z-index: 30;
+  }
+  .layout{
+    margin-left: 18rem;  /* içerik tarafına aynı kadar boşluk */
+  }
+
+  /* İsteğe bağlı: çok küçük ekranlarda (mobil) sidebar genişliğini azalt */
+  @media (max-width: 640px){
+    .sidebar{ width: 15rem; }
+    .layout{  margin-left: 15rem; }
+  }
+    .kbd{border:1px solid #e5e7eb;border-bottom-width:2px;border-radius:.5rem;background:#f8fafc;padding:.1rem .35rem;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,"Liberation Mono","Courier New",monospace;font-size:.75rem}
+      :root { --sidebar-w: 18rem; }   /* 18rem ≈ 288px */
+
+  /* Sidebar sabit */
+  .sidebar{
+    position: fixed;
+    inset: 0 auto 0 0;     /* top:0; right:auto; bottom:0; left:0 */
+    width: var(--sidebar-w);
+    overflow: auto;
+    z-index: 30;
+  }
+
+  /* Sağ kolon: genişlik = ekran - sidebar */
+  .layout{
+    margin-left: var(--sidebar-w);
+    width: calc(100% - var(--sidebar-w));
+    min-width: 0;          /* flex/min-content sorunlarını engeller */
+  }
+
+  /* Bazı sayfalarda gelen body{display:flex;} kuralını etkisizleştir */
+  body { display: block !important; overflow-x: hidden; }
+
+  /* Mobilde sidebar biraz daralsın, içerik de uyumlansın */
+  @media (max-width: 640px){
+    :root { --sidebar-w: 15rem; }
+  }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+    <div class="sidebar">
+      <h2>YAĞMURLU KÖY DERNEĞİ YÖNETİM PANELİ</h2>
+      <a href="index.html">
+        <i class="fas fa-home"></i>Ana Sayfa
+      </a>
+      <a href="kullaniciKayit.html">
+        <i class="fas fa-user-plus"></i>Kullanıcı Kayıt
+      </a>
+      <a href="kullaniciBilgileri.html">
+        <i class="fas fa-users"></i>Kullanıcı Bilgileri
+      </a>
+      <a href="gelirGider.html">
+        <i class="fas fa-money-bill-wave"></i>Gelir - Gider
+      </a>
+      <a href="post.html">
+        <i class="fas fa-newspaper"></i>Post Paylaşımı
+      </a>
+      <a href="reklam.html">
+        <i class="fas fa-ad"></i>Reklam
+      </a>
+      <a href="poll_admin.html"><i class="fas fa-chart-pie"></i> Anketler</a>
+      <a href="galeri.html">
+        <i class="fas fa-images"></i>Galeri
+      </a>
+      <a href="oneriSikayet.html" >
+        <i class="fas fa-comment-alt"></i>Öneri & Şikayet
+      </a>
+          <a href="isletme.html" class="active"><i class="fas fa-store"></i> İşletmeler</a>
+<a href="bildirim.html"><i class="fas fa-bell"></i> Bildirim Gönder</a>
+<a href="etkinlik.html"><i class="fas fa-calendar-check"></i> Etkinlikler</a>
+
+       <a href="about.html" >
+        <i class="fas fa-comment-alt"></i>Hakkımızda
+      </a>
+    </div>
+  <!-- Header -->
+  <div class="layout">
+<header class="sticky top-0 z-40 bg-white/80 backdrop-blur border-b border-gray-200">
+  <div class="w-full px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <h1 class="text-lg font-bold">Yağmurlu Derneği • İşletmeler Paneli</h1>
+        <span class="hidden md:inline text-xs text-gray-500">Kısayol: <span class="kbd">G</span> Kategoriler • <span class="kbd">B</span> İşletmeler</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="badge badge-gray">API: <span id="apiBaseTxt" class="ml-1"></span></span>
+        <button id="btnSettings" class="btn btn-outline">Ayarlar</button>
+        <button id="btnReloadAll" class="btn btn-outline">Yenile</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main -->
+<main class="w-full px-4 py-6 space-y-6">
+    <!-- Tabs -->
+    <div class="flex items-center gap-2">
+      <button data-tab="tab-cats" class="btn btn-outline" id="tabCatsBtn">Kategoriler</button>
+      <button data-tab="tab-biz" class="btn btn-outline" id="tabBizBtn">İşletmeler</button>
+    </div>
+
+    <!-- Alerts -->
+    <div id="alert" class="hidden"></div>
+
+    <!-- Categories Tab -->
+    <section id="tab-cats" class="space-y-4">
+      <div class="card p-4">
+        <h2 class="text-base font-semibold mb-3">Yeni Kategori Ekle</h2>
+        <form id="catForm" class="grid grid-cols-1 md:grid-cols-5 gap-3">
+          <div class="md:col-span-2">
+            <label class="label">Ad</label>
+            <input id="catName" class="input" placeholder="Örn: Restoran" required />
+          </div>
+          <div class="md:col-span-2">
+            <label class="label">Simge (URL)</label>
+            <div class="flex gap-2">
+              <input id="catIcon" class="input" placeholder="https://...png" />
+              <input id="catIconFile" type="file" accept="image/*" class="block w-40 text-sm" />
+            </div>
+            <p class="text-xs text-gray-500 mt-1">Dosya seçerseniz otomatik <code>uploads/categories/</code>’a yüklenir.</p>
+          </div>
+          <div class="flex items-end gap-2">
+            <label class="inline-flex items-center gap-2">
+              <input id="catActive" type="checkbox" class="rounded" checked />
+              <span>Aktif</span>
+            </label>
+          </div>
+          <div class="flex items-end">
+            <button class="btn btn-primary w-full" type="submit">Ekle</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card p-4">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-base font-semibold">Kategoriler</h2>
+          <div class="flex items-center gap-2">
+            <input id="catSearch" class="input" placeholder="Ara..." />
+          </div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="table w-full">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Ad</th>
+                <th>Aktif</th>
+                <th>Simge</th>
+                <th class="text-right">İşlem</th>
+              </tr>
+            </thead>
+            <tbody id="catRows"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Businesses Tab -->
+    <section id="tab-biz" class="hidden space-y-4">
+      <div class="card p-4">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-base font-semibold">Filtrele</h2>
+          <button id="btnNewBiz" class="btn btn-primary">Yeni İşletme</button>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
+          <div class="md:col-span-2">
+            <label class="label">Arama</label>
+            <input id="bizQ" class="input" placeholder="İşletme adı, adres..." />
+          </div>
+          <div>
+            <label class="label">Kategori</label>
+            <select id="bizCat" class="input"></select>
+          </div>
+          <div>
+            <label class="label">Durum</label>
+            <select id="bizStatus" class="input">
+              <option value="">Tümü</option>
+              <option value="1">Aktif</option>
+              <option value="0">Pasif</option>
+            </select>
+          </div>
+          <div class="flex items-end">
+            <button id="btnBizFilter" class="btn btn-outline w-full">Uygula</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card p-4">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-base font-semibold">İşletmeler</h2>
+          <div class="text-sm text-gray-500">Toplam: <span id="bizCount">0</span></div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="table w-full">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Ad</th>
+                <th>Kategori</th>
+                <th>Telefon</th>
+                <th>Durum</th>
+                <th class="text-right">İşlem</th>
+              </tr>
+            </thead>
+            <tbody id="bizRows"></tbody>
+          </table>
+        </div>
+        <div class="mt-3 flex justify-center">
+          <button id="btnBizMore" class="btn btn-outline hidden">Daha Fazla</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Business Modal -->
+  <div id="bizModal" class="modal">
+    <div class="card w-full max-w-3xl p-4 bg-white">
+      <div class="flex items-center justify-between mb-2">
+        <h3 id="bizModalTitle" class="text-lg font-semibold">İşletme</h3>
+        <button class="btn btn-outline" onclick="closeBizModal()">Kapat</button>
+      </div>
+      <form id="bizForm" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <input type="hidden" id="bizId" />
+        <div>
+          <label class="label">Ad</label>
+          <input id="bizName" class="input" required />
+        </div>
+        <div>
+          <label class="label">Kategori</label>
+          <select id="bizCategoryId" class="input" required></select>
+        </div>
+        <div class="md:col-span-2">
+          <label class="label">Açıklama</label>
+          <textarea id="bizDesc" class="input" rows="3"></textarea>
+        </div>
+        <div>
+          <label class="label">Adres</label>
+          <input id="bizAddress" class="input" />
+        </div>
+        <div>
+          <label class="label">Telefon</label>
+          <input id="bizPhone" class="input" />
+        </div>
+        <div>
+          <label class="label">WhatsApp</label>
+          <input id="bizWhats" class="input" />
+        </div>
+        <div>
+          <label class="label">Web</label>
+          <input id="bizWeb" class="input" />
+        </div>
+        <div class="md:col-span-2">
+          <label class="label">Kapak Görseli</label>
+          <div class="flex gap-2">
+            <input id="bizCover" class="input" placeholder="https://..." />
+            <input id="bizCoverFile" type="file" accept="image/*" class="block w-48 text-sm" />
+          </div>
+          <p class="text-xs text-gray-500 mt-1">Dosya seçerseniz otomatik <code>uploads/businesses/</code>’a yüklenir.</p>
+        </div>
+        <div>
+          <label class="label">Enlem (lat)</label>
+          <input id="bizLat" class="input" type="number" step="any" />
+        </div>
+        <div>
+          <label class="label">Boylam (lng)</label>
+          <input id="bizLng" class="input" type="number" step="any" />
+        </div>
+        <div class="flex items-center gap-2">
+          <input id="bizActive" type="checkbox" class="rounded" checked />
+          <label for="bizActive" class="label">Aktif</label>
+        </div>
+        <div class="md:col-span-2 flex justify-end gap-2 mt-2">
+          <button type="button" class="btn btn-outline" onclick="closeBizModal()">Vazgeç</button>
+          <button class="btn btn-primary" type="submit">Kaydet</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div id="settingsModal" class="modal">
+    <div class="card w-full max-w-lg p-4 bg-white">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="text-lg font-semibold">Ayarlar</h3>
+        <button class="btn btn-outline" onclick="closeSettings()">Kapat</button>
+      </div>
+      <div class="space-y-3">
+        <div>
+          <label class="label">API Base (admin.php’nin bulunduğu dizin)</label>
+          <input id="setApiBase" class="input" placeholder="https://erkayasoft.com/api" />
+        </div>
+        <div>
+          <label class="label">Admin Token (opsiyonel)</label>
+          <input id="setToken" class="input" placeholder="ADMIN_TOKEN" />
+          <p class="text-xs text-gray-500 mt-1">admin.php’de <code>ADMIN_TOKEN</code> tanımlıysa zorunludur.</p>
+        </div>
+        <div class="flex justify-end gap-2">
+          <button class="btn btn-outline" onclick="closeSettings()">Vazgeç</button>
+          <button class="btn btn-primary" onclick="saveSettings()">Kaydet</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+  <script>
+    // ==== SETTINGS / STORAGE ====
+    const store = {
+      get apiBase(){ return localStorage.getItem('apiBase') || 'https://erkayasoft.com/api'; },
+      set apiBase(v){ localStorage.setItem('apiBase', v); },
+      get token(){ return localStorage.getItem('adminToken') || ''; },
+      set token(v){ localStorage.setItem('adminToken', v); }
+    };
+    const elApiBaseTxt = document.getElementById('apiBaseTxt');
+    const elSettings = document.getElementById('settingsModal');
+    const btnSettings = document.getElementById('btnSettings');
+    function openSettings(){
+      document.getElementById('setApiBase').value = store.apiBase;
+      document.getElementById('setToken').value = store.token;
+      elSettings.classList.add('open');
+    }
+    function closeSettings(){ elSettings.classList.remove('open'); }
+    function saveSettings(){
+      const b = document.getElementById('setApiBase').value.trim();
+      const t = document.getElementById('setToken').value.trim();
+      if(!b){ alert('API Base gerekli'); return; }
+      store.apiBase = b; store.token = t;
+      elApiBaseTxt.textContent = store.apiBase;
+      closeSettings();
+      // reload data
+      loadCategories(); loadBusinesses({reset:true});
+    }
+    btnSettings.addEventListener('click', openSettings);
+    window.closeSettings = closeSettings;
+
+    function adminUrl(action, qs={}) {
+      const url = new URL(`${store.apiBase.replace(/\/$/,'')}/admin.php`);
+      url.searchParams.set('action', action);
+      for (const [k,v] of Object.entries(qs)) {
+        if (v!==undefined && v!==null && v!=='') url.searchParams.set(k, v);
+      }
+      return url.toString();
+    }
+    function headersJson() {
+      const h = { 'Content-Type': 'application/json' };
+      if (store.token) h['X-Admin-Token'] = store.token;
+      return h;
+    }
+    function headersUpload() {
+      const h = {};
+      if (store.token) h['X-Admin-Token'] = store.token;
+      return h;
+    }
+    function toQuery(obj) {
+      return Object.entries(obj)
+        .filter(([,v]) => v !== undefined && v !== null && v !== '')
+        .map(([k,v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
+        .join('&');
+    }
+    function escapeHtml(s) { return (s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+    // alert
+    const alertBox = document.getElementById('alert');
+    function showAlert(type, msg) {
+      const base = 'rounded-lg p-3 border';
+      const styles = type === 'error' ? 'bg-red-50 border-red-200 text-red-700' : 'bg-green-50 border-green-200 text-green-700';
+      alertBox.className = base + ' ' + styles;
+      alertBox.innerText = msg;
+      alertBox.classList.remove('hidden');
+      setTimeout(() => alertBox.classList.add('hidden'), 2500);
+    }
+
+    // Tabs
+    const tabCatsBtn = document.getElementById('tabCatsBtn');
+    const tabBizBtn = document.getElementById('tabBizBtn');
+    const catsTab = document.getElementById('tab-cats');
+    const bizTab = document.getElementById('tab-biz');
+    function setTab(tab) {
+      if (tab === 'tab-cats') {
+        catsTab.classList.remove('hidden');
+        bizTab.classList.add('hidden');
+        tabCatsBtn.classList.add('btn-primary'); tabCatsBtn.classList.remove('btn-outline');
+        tabBizBtn.classList.remove('btn-primary'); tabBizBtn.classList.add('btn-outline');
+      } else {
+        bizTab.classList.remove('hidden');
+        catsTab.classList.add('hidden');
+        tabBizBtn.classList.add('btn-primary'); tabBizBtn.classList.remove('btn-outline');
+        tabCatsBtn.classList.remove('btn-primary'); tabCatsBtn.classList.add('btn-outline');
+      }
+    }
+    tabCatsBtn.addEventListener('click', () => setTab('tab-cats'));
+    tabBizBtn.addEventListener('click', () => setTab('tab-biz'));
+
+    // Keyboard shortcuts
+    window.addEventListener('keydown', (e)=>{
+      if (e.target.tagName==='INPUT' || e.target.tagName==='TEXTAREA') return;
+      if (e.key.toLowerCase()==='g') setTab('tab-cats');
+      if (e.key.toLowerCase()==='b') setTab('tab-biz');
+    });
+
+    // ==== FILE UPLOAD ====
+    async function fileUpload(file, subdir) {
+      const fd = new FormData();
+      fd.append('file', file);
+      if (subdir) fd.append('subdir', subdir);
+      const r = await fetch(adminUrl('file.upload'), { method: 'POST', headers: headersUpload(), body: fd });
+      const b = await r.json();
+      if (!b.success) throw new Error(b.error || 'Upload başarısız');
+      return b.url; // tam URL
+    }
+
+    // ==== Categories ====
+    const catRows = document.getElementById('catRows');
+    const catForm = document.getElementById('catForm');
+    const catName = document.getElementById('catName');
+    const catIcon = document.getElementById('catIcon');
+    const catIconFile = document.getElementById('catIconFile');
+    const catActive = document.getElementById('catActive');
+    const catSearch = document.getElementById('catSearch');
+
+    let CATS = [];
+
+    async function loadCategories() {
+      try {
+        const r = await fetch(adminUrl('cats.list'));
+        const b = await r.json();
+        CATS = Array.isArray(b.data) ? b.data : [];
+        renderCategories();
+        fillCategorySelects();
+      } catch (e) {
+        showAlert('error', 'Kategoriler yüklenemedi');
+      }
+    }
+
+    function renderCategories() {
+      const q = (catSearch.value||'').trim().toLowerCase();
+      catRows.innerHTML = '';
+      CATS.filter(c => !q || (c.name||'').toLowerCase().includes(q)).forEach(c => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${c.id}</td>
+          <td>${escapeHtml(c.name||'')}</td>
+          <td>${(c.is_active==1||c.is_active===true)?'<span class="badge badge-green">Aktif</span>':'<span class="badge badge-gray">Pasif</span>'}</td>
+          <td>${c.icon?`<a class="text-blue-600 underline" target="_blank" href="${c.icon}">Gör</a>`:''}</td>
+          <td class="text-right">
+            <button class="btn btn-outline mr-2" data-edit="${c.id}">Düzenle</button>
+            <button class="btn btn-danger" data-del="${c.id}">Sil</button>
+          </td>`;
+        catRows.appendChild(tr);
+      });
+      // actions
+      catRows.querySelectorAll('[data-edit]').forEach(btn => btn.addEventListener('click', () => editCategory(+btn.dataset.edit)));
+      catRows.querySelectorAll('[data-del]').forEach(btn => btn.addEventListener('click', () => deleteCategory(+btn.dataset.del)));
+    }
+
+    catSearch.addEventListener('input', renderCategories);
+
+    catForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      let iconUrl = catIcon.value.trim();
+      const file = catIconFile.files[0];
+      if (file) {
+        try { iconUrl = await fileUpload(file, 'categories'); }
+        catch (err) { showAlert('error', err.message || 'Simge yüklenemedi'); return; }
+      }
+      const payload = {
+        name: catName.value.trim(),
+        icon: iconUrl,
+        is_active: catActive.checked ? 1 : 0,
+      };
+      try {
+        const r = await fetch(adminUrl('cats.create'), { method: 'POST', headers: headersJson(), body: JSON.stringify(payload) });
+        const b = await r.json();
+        if (b.success) { showAlert('ok', 'Kategori eklendi'); catForm.reset(); catActive.checked = true; await loadCategories(); }
+        else showAlert('error', b.error || 'Kategori eklenemedi');
+      } catch (e) { showAlert('error', 'Kategori eklenemedi'); }
+    });
+
+    async function editCategory(id) {
+      const c = CATS.find(x => +x.id === id);
+      if (!c) return;
+      const name = prompt('Kategori adı', c.name || '');
+      if (name === null) return;
+      const active = confirm('Kategori AKTİF olsun mu? (Tamam = Aktif, İptal = Pasif)');
+      const icon = prompt('Simge URL (boş bırakılabilir)', c.icon || '');
+      try {
+        const r = await fetch(adminUrl('cats.update'), { method: 'POST', headers: headersJson(), body: JSON.stringify({ id, name, icon, is_active: active ? 1 : 0 }) });
+        const b = await r.json();
+        if (b.success) { showAlert('ok', 'Güncellendi'); await loadCategories(); } else showAlert('error', b.error || 'Güncellenemedi');
+      } catch (e) { showAlert('error', 'Güncellenemedi'); }
+    }
+
+    async function deleteCategory(id) {
+      if (!confirm('Bu kategoriyi silmek istediğinize emin misiniz?')) return;
+      try {
+        const r = await fetch(adminUrl('cats.delete'), { method: 'POST', headers: headersJson(), body: JSON.stringify({ id }) });
+        const b = await r.json();
+        if (b.success) { showAlert('ok', 'Silindi'); await loadCategories(); }
+        else showAlert('error', b.error || 'Silinemedi');
+      } catch (e) { showAlert('error', 'Silinemedi'); }
+    }
+
+    function fillCategorySelects() {
+      const sel = document.getElementById('bizCat');
+      const sel2 = document.getElementById('bizCategoryId');
+      sel.innerHTML = '<option value="">Tümü</option>' + CATS.map(c => `<option value="${c.id}">${escapeHtml(c.name||'')}</option>`).join('');
+      sel2.innerHTML = CATS.map(c => `<option value="${c.id}">${escapeHtml(c.name||'')}</option>`).join('');
+    }
+
+    // ==== Businesses ====
+    const bizRows = document.getElementById('bizRows');
+    const bizCountEl = document.getElementById('bizCount');
+    const btnBizMore = document.getElementById('btnBizMore');
+
+    let BIZ_PAGE = 1, BIZ_HAS_MORE = false, BIZ_ITEMS = [];
+
+    async function loadBusinesses({ reset = true } = {}) {
+      if (reset) { BIZ_PAGE = 1; BIZ_ITEMS = []; }
+      const q = document.getElementById('bizQ').value.trim();
+      const categoryId = document.getElementById('bizCat').value;
+      const status = document.getElementById('bizStatus').value;
+
+      const params = {
+        q,
+        categoryId,
+        page: BIZ_PAGE,
+        pageSize: 20,
+        sort: 'new',
+        status
+      };
+      try {
+        const url = adminUrl('biz.list', params);
+        const r = await fetch(url);
+        const b = await r.json();
+        const list = Array.isArray(b.data) ? b.data : [];
+        BIZ_ITEMS = BIZ_ITEMS.concat(list);
+        BIZ_HAS_MORE = !!b.nextPage;
+        if (BIZ_HAS_MORE) BIZ_PAGE = b.nextPage;
+        renderBusinesses();
+      } catch (e) { showAlert('error', 'İşletmeler alınamadı'); }
+    }
+
+    function renderBusinesses() {
+      bizRows.innerHTML = '';
+      bizCountEl.textContent = BIZ_ITEMS.length;
+      BIZ_ITEMS.forEach(x => {
+        const activeBadge = (x.is_active==1||x.is_active===true) ? '<span class="badge badge-green">Aktif</span>' : '<span class="badge badge-gray">Pasif</span>';
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${x.id}</td>
+          <td class="font-medium">${escapeHtml(x.name||'')}</td>
+          <td>${escapeHtml(x.category_name||'')}</td>
+          <td>${escapeHtml(x.phone||'')}</td>
+          <td>${activeBadge}</td>
+          <td class="text-right space-x-2">
+            <button class="btn btn-outline" data-editbiz="${x.id}">Düzenle</button>
+            <button class="btn btn-outline" data-toggle="${x.id}" data-state="${x.is_active?1:0}">${x.is_active? 'Pasifleştir' : 'Aktifleştir'}</button>
+            <button class="btn btn-danger" data-delbiz="${x.id}">Sil</button>
+          </td>`;
+        bizRows.appendChild(tr);
+      });
+
+      btnBizMore.classList.toggle('hidden', !BIZ_HAS_MORE);
+
+      // wire actions
+      bizRows.querySelectorAll('[data-editbiz]').forEach(b => b.addEventListener('click', () => openBizEdit(+b.dataset.editbiz)));
+      bizRows.querySelectorAll('[data-delbiz]').forEach(b => b.addEventListener('click', () => deleteBusiness(+b.dataset.delbiz)));
+      bizRows.querySelectorAll('[data-toggle]').forEach(b => b.addEventListener('click', () => toggleBusiness(+b.dataset.toggle, b.dataset.state==='1')));
+    }
+
+    document.getElementById('btnBizFilter').addEventListener('click', () => loadBusinesses({ reset: true }));
+    document.getElementById('bizQ').addEventListener('keydown', (e) => { if (e.key==='Enter') loadBusinesses({reset:true}); });
+    btnBizMore.addEventListener('click', () => loadBusinesses({ reset: false }));
+
+    // ==== Business Modal Create/Update ====
+    const bizModal = document.getElementById('bizModal');
+    const bizForm = document.getElementById('bizForm');
+    const bizModalTitle = document.getElementById('bizModalTitle');
+    const bizCoverFile = document.getElementById('bizCoverFile');
+
+    function openBizNew() {
+      bizModalTitle.textContent = 'Yeni İşletme';
+      bizForm.reset();
+      document.getElementById('bizId').value = '';
+      document.getElementById('bizActive').checked = true;
+      openBizModal();
+    }
+    function openBizEdit(id) {
+      const x = BIZ_ITEMS.find(i => +i.id === id);
+      if (!x) return;
+      bizModalTitle.textContent = `İşletme Düzenle #${id}`;
+      document.getElementById('bizId').value = x.id;
+      document.getElementById('bizName').value = x.name||'';
+      document.getElementById('bizCategoryId').value = x.category_id||x.categoryId||'';
+      document.getElementById('bizDesc').value = x.description||'';
+      document.getElementById('bizAddress').value = x.address||'';
+      document.getElementById('bizPhone').value = x.phone||'';
+      document.getElementById('bizWhats').value = x.whatsapp||x.whatsapp_phone||'';
+      document.getElementById('bizWeb').value = x.website||'';
+      document.getElementById('bizCover').value = x.cover_url||x.coverUrl||'';
+      document.getElementById('bizLat').value = x.lat||'';
+      document.getElementById('bizLng').value = x.lng||'';
+      document.getElementById('bizActive').checked = (x.is_active==1||x.is_active===true);
+      openBizModal();
+    }
+    function openBizModal() { bizModal.classList.add('open'); }
+    function closeBizModal() { bizModal.classList.remove('open'); }
+    window.closeBizModal = closeBizModal;
+
+    document.getElementById('btnNewBiz').addEventListener('click', openBizNew);
+
+    // Kapak dosyası seçilince otomatik upload et
+    bizCoverFile.addEventListener('change', async (e)=>{
+      const f = e.target.files[0];
+      if (!f) return;
+      try {
+        const url = await fileUpload(f, 'businesses');
+        document.getElementById('bizCover').value = url;
+        showAlert('ok', 'Kapak yüklendi');
+      } catch(err){
+        showAlert('error', err.message || 'Kapak yüklenemedi');
+      } finally {
+        e.target.value = '';
+      }
+    });
+
+    bizForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const payload = {
+        id: document.getElementById('bizId').value || undefined,
+        name: document.getElementById('bizName').value.trim(),
+        category_id: +document.getElementById('bizCategoryId').value,
+        description: document.getElementById('bizDesc').value.trim(),
+        address: document.getElementById('bizAddress').value.trim(),
+        phone: document.getElementById('bizPhone').value.trim(),
+        whatsapp: document.getElementById('bizWhats').value.trim(),
+        website: document.getElementById('bizWeb').value.trim(),
+        cover_url: document.getElementById('bizCover').value.trim(),
+        lat: document.getElementById('bizLat').value.trim(),
+        lng: document.getElementById('bizLng').value.trim(),
+        is_active: document.getElementById('bizActive').checked ? 1 : 0,
+      };
+      if (!payload.name || !payload.category_id){ showAlert('error','Ad ve Kategori zorunlu'); return; }
+      const create = !payload.id;
+      try {
+        const act = create ? 'biz.create' : 'biz.update';
+        const r = await fetch(adminUrl(act), { method: 'POST', headers: headersJson(), body: JSON.stringify(payload) });
+        const b = await r.json();
+        if (b.success) {
+          showAlert('ok', create ? 'İşletme eklendi' : 'Güncellendi');
+          closeBizModal();
+          await loadBusinesses({ reset: true });
+        } else showAlert('error', b.error || 'İşlem başarısız');
+      } catch (e) { showAlert('error', 'İşlem başarısız'); }
+    });
+
+    async function toggleBusiness(id, currentState) {
+      try {
+        const r = await fetch(adminUrl('biz.toggle'), { method: 'POST', headers: headersJson(), body: JSON.stringify({ id, is_active: currentState?0:1 }) });
+        const b = await r.json();
+        if (b.success) { showAlert('ok', 'Durum güncellendi'); await loadBusinesses({ reset: true }); }
+        else showAlert('error', b.error || 'Güncellenemedi');
+      } catch (e) { showAlert('error', 'Güncellenemedi'); }
+    }
+
+    async function deleteBusiness(id) {
+      if (!confirm('Bu işletme silinsin mi?')) return;
+      try {
+        const r = await fetch(adminUrl('biz.delete'), { method: 'POST', headers: headersJson(), body: JSON.stringify({ id }) });
+        const b = await r.json();
+        if (b.success) { showAlert('ok', 'Silindi'); await loadBusinesses({ reset: true }); }
+        else showAlert('error', b.error || 'Silinemedi');
+      } catch (e) { showAlert('error', 'Silinemedi'); }
+    }
+
+    // ==== Boot ====
+    elApiBaseTxt.textContent = store.apiBase;
+    document.getElementById('btnReloadAll').addEventListener('click', () => { loadCategories(); loadBusinesses({ reset: true }); });
+
+    // Kategori simgesi dosya upload
+    document.getElementById('catIconFile').addEventListener('change', async (e)=>{
+      const f = e.target.files[0];
+      if(!f) return;
+      try {
+        const url = await fileUpload(f, 'categories');
+        catIcon.value = url;
+        showAlert('ok','Simge yüklendi');
+      } catch(err){
+        showAlert('error', err.message || 'Simge yüklenemedi');
+      } finally {
+        e.target.value = '';
+      }
+    });
+
+    setTab('tab-cats');
+    loadCategories().then(() => loadBusinesses({ reset: true }));
+  </script>
+</body>
+</html>
